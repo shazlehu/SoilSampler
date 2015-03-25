@@ -24,6 +24,7 @@
 		228B53EC1AC240A6009A1F78 /* CenterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228B53E81AC240A6009A1F78 /* CenterViewController.swift */; };
 		228B53ED1AC240A6009A1F78 /* ContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228B53E91AC240A6009A1F78 /* ContainerViewController.swift */; };
 		228B53EF1AC240AE009A1F78 /* CustomAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228B53EE1AC240AE009A1F78 /* CustomAnnotation.swift */; };
+		228B53F11AC241E4009A1F78 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228B53F01AC241E4009A1F78 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,6 +61,7 @@
 		228B53E81AC240A6009A1F78 /* CenterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CenterViewController.swift; sourceTree = "<group>"; };
 		228B53E91AC240A6009A1F78 /* ContainerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContainerViewController.swift; sourceTree = "<group>"; };
 		228B53EE1AC240AE009A1F78 /* CustomAnnotation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomAnnotation.swift; sourceTree = "<group>"; };
+		228B53F01AC241E4009A1F78 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,6 +111,7 @@
 				228B53D11AC23FFD009A1F78 /* HeatMapView.m */,
 				228B53B71AC23F98009A1F78 /* LaunchScreen.xib */,
 				228B53E61AC240A6009A1F78 /* SidePanelViewController.swift */,
+				228B53F01AC241E4009A1F78 /* AppDelegate.swift */,
 				228B53E71AC240A6009A1F78 /* SettingsViewController.swift */,
 				228B53E81AC240A6009A1F78 /* CenterViewController.swift */,
 				228B53E91AC240A6009A1F78 /* ContainerViewController.swift */,
@@ -251,6 +254,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				228B53F11AC241E4009A1F78 /* AppDelegate.swift in Sources */,
 				228B53D81AC2402D009A1F78 /* ViewController.swift in Sources */,
 				228B53D21AC23FFD009A1F78 /* HeatMap.m in Sources */,
 				228B53ED1AC240A6009A1F78 /* ContainerViewController.swift in Sources */,
