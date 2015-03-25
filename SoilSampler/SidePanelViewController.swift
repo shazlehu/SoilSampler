@@ -9,58 +9,6 @@
 import UIKit
 
 
-
-/*
-enum MenuItem : Printable {
-    case Map (ViewController)
-    case Heatmap (ViewController)
-    case Settings (SettingsViewController,ViewController)
-    case CollectSamples (ViewController)
-    case Annotations (ViewController)
-    case Field (ViewController)
-    var viewController : UIViewController {
-        get {
-            switch (self) {
-            case .Map (let vc): return vc
-            case .Heatmap (let vc): return vc
-            case .CollectSamples(let vc):return vc
-            case .Annotations(let vc):return vc
-            case .Field(let vc): return vc
-            case .Settings (let vc,_): return vc
-            }
-        }
-    }
-    
-    func doAction() {
-        switch self {
-        case .Heatmap(let vc) :
-             vc.heatMapOn = !vc.heatMapOn
-        case .CollectSamples(let vc) :
-            vc.showSampleTable()
-        case .Map(let vc) :
-            vc.removeSampleTable()
-        case .Annotations(let vc) :
-            vc.toggleAnnotations()
-        case .Field(let vc) :
-            vc.fieldOn = !vc.fieldOn
-        default: return
-        }
-    }
-    
-    var description : String {
-        get {
-            switch self {
-            case .Map: return "Define Field Boundaries"
-            case .Heatmap: return "Toggle Heatmap"
-            case .Settings: return "Settings"
-            case .CollectSamples: return "Collect Samples"
-            case .Annotations: return "Toggle Sample Annotations"
-            case .Field: return "Toggle Field Annotations"
-            }
-        }
-    }
-*/
-
 class MenuItem {
     var _title : String
     var _viewController: UIViewController!
