@@ -25,7 +25,7 @@
         <!--Define Sample-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController storyboardIdentifier="CenterViewController" modalPresentationStyle="pageSheet" id="BYZ-38-t0r" customClass="ViewController" customModule="MapTest" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CenterViewController" modalPresentationStyle="pageSheet" id="BYZ-38-t0r" customClass="ViewController" customModule="SoilSampler" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -75,7 +75,7 @@
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="TOY-LY-QhS"/>
                                 </connections>
                             </toolbar>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="aIf-k4-jCp">
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="aIf-k4-jCp">
                                 <rect key="frame" x="0.0" y="64" width="600" height="448"/>
                                 <gestureRecognizers/>
                                 <connections>
@@ -87,9 +87,10 @@
                         <constraints>
                             <constraint firstItem="hrT-sw-Lv3" firstAttribute="trailing" secondItem="aIf-k4-jCp" secondAttribute="trailing" id="9Eh-KI-uDg"/>
                             <constraint firstItem="hrT-sw-Lv3" firstAttribute="top" secondItem="aIf-k4-jCp" secondAttribute="bottom" id="DYw-U8-SgX"/>
+                            <constraint firstItem="aIf-k4-jCp" firstAttribute="bottom" secondItem="hrT-sw-Lv3" secondAttribute="top" id="Ovo-9p-hgp"/>
                             <constraint firstAttribute="trailing" secondItem="aIf-k4-jCp" secondAttribute="trailing" id="RVc-7E-JJA"/>
                             <constraint firstItem="aIf-k4-jCp" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="Tpx-do-8dq"/>
-                            <constraint firstItem="hrT-sw-Lv3" firstAttribute="bottom" secondItem="wfy-db-euE" secondAttribute="top" id="cRb-vZ-sRz"/>
+                            <constraint firstItem="hrT-sw-Lv3" firstAttribute="bottom" secondItem="wfy-db-euE" secondAttribute="bottom" id="cRb-vZ-sRz"/>
                             <constraint firstItem="aIf-k4-jCp" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="eWs-xe-5rB"/>
                             <constraint firstItem="hrT-sw-Lv3" firstAttribute="leading" secondItem="aIf-k4-jCp" secondAttribute="leading" id="kwW-JE-6ej"/>
                         </constraints>
@@ -132,7 +133,7 @@
         <!--Settings-->
         <scene sceneID="taK-2d-NOH">
             <objects>
-                <tableViewController storyboardIdentifier="SettingsViewController" title="Settings" id="5Mo-db-Wtr" customClass="SettingsViewController" customModule="MapTest" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="SettingsViewController" title="Settings" id="5Mo-db-Wtr" customClass="SettingsViewController" customModule="SoilSampler" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="MPO-8J-edW">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -325,12 +326,12 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="H81-Pu-1R8" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="876" y="831"/>
+            <point key="canvasLocation" x="720" y="810"/>
         </scene>
         <!--Left View Controller-->
         <scene sceneID="Nov-0J-YIF">
             <objects>
-                <viewController storyboardIdentifier="LeftViewController" title="Left View Controller" id="CST-f6-ZrP" customClass="SidePanelViewController" customModule="MapTest" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="LeftViewController" title="Left View Controller" id="CST-f6-ZrP" customClass="SidePanelViewController" customModule="SoilSampler" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="RwE-v3-96e"/>
                         <viewControllerLayoutGuide type="bottom" id="xpd-Qn-LKo"/>
@@ -362,7 +363,7 @@
                                     </constraints>
                                 </view>
                                 <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="checkmark" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="MenuCell" id="x9G-AF-5TE" customClass="MenuCell" customModule="MapTest" customModuleProvider="target">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="checkmark" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="MenuCell" id="x9G-AF-5TE" customClass="MenuCell" customModule="SoilSampler" customModuleProvider="target">
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="x9G-AF-5TE" id="r6E-KM-Ou2">
                                             <autoresizingMask key="autoresizingMask"/>
@@ -437,7 +438,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PAb-cf-h57" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-690" y="870"/>
+            <point key="canvasLocation" x="-592" y="810"/>
         </scene>
     </scenes>
     <resources>

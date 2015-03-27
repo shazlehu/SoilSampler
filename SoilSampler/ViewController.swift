@@ -62,9 +62,8 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         }
     }
 
-//    lazy var locationManager: LocationManager =
-//        LocationManager(aSampler: self.sampler, aMap: self.map, aView: self)
-    
+    var locationManager: LocationManager!
+
     @IBOutlet weak var randomOrGrid: UISegmentedControl!
     
     var sampleAnnotations = [AnyObject]()
@@ -80,8 +79,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         mapToolBarConstraint = NSLayoutConstraint(item: map, attribute: .Bottom, relatedBy: .Equal, toItem: toolBar, attribute: .Top, multiplier: 1, constant: 0)
         view.addConstraint(mapToolBarConstraint)
         if view.needsUpdateConstraints() { view.updateConstraints() }
-        
-        goToUserLocation(self)
+        locationManager = LocationManager(aSampler: self.sampler, aMap: self.map, aView: self)
     }
     
     // MARK: IBActions
@@ -471,6 +469,11 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         
     }
     
+    func mapView(mapView: MKMapView!,
+        didUpdateUserLocation userLocation: MKUserLocation!)
+    {
+        goToUserLocation(self)
+    }
 /*
     func mapView(mapView: MKMapView!, rendererForOverlay overlay: MKOverlay!) -> MKOverlayRenderer!
     {

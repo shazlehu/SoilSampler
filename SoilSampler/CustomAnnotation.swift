@@ -51,5 +51,4 @@ class CustomAnnotationView: MKAnnotationView {
         self.setSelected(true, animated: true)
         super.touchesBegan(touches, withEvent: event)
     }
-
 }
