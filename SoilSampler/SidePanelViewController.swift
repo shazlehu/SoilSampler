@@ -40,6 +40,7 @@ class SidePanelViewController: UIViewController, UITableViewDataSource, UITableV
             addMenuItem("Collect Samples", vc: mapViewController, action: {[unowned self] in self.mapViewController.showSampleTable()})
             addMenuItem("Toggle Sample Annotations", vc: mapViewController, action: {[unowned self] in self.mapViewController.annotationsOn = !self.mapViewController.annotationsOn})
             addMenuItem("Toggle Field Annotations", vc: mapViewController, action: {[unowned self] in self.mapViewController.fieldOn = !self.mapViewController.fieldOn})
+            addMenuItem("Go to location", vc: mapViewController, action: {[unowned self] in self.mapViewController.askForNewLocation()})
         }
     }
     

@@ -38,6 +38,12 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
             static let DefineFieldAndSample = "Please tap the map to mark field corners, use the +/- buttons to generate samples."
             static let OK = "Ok"
         }
+        struct GoToAlert {
+            static let Title = "Go to location:"
+            static let ErrorTitle = "Latitude must be from -90 to 90, Longitude -180 to 180"
+            static let Go = "Go"
+        }
+        
         static let Title = "Define Sample"
         static let ClearedTitle = "Samples: 0"
         static let ShareMessage = "This is a spreadsheet of latitude & longitude coordinates and penetrometer depths."
@@ -145,8 +151,68 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     }
 
     @IBAction func goToUserLocation(sender: AnyObject) {
-        var region = MKCoordinateRegion(center: map.userLocation.coordinate, span: Constants.DefaultSpan)
+        let region = MKCoordinateRegion(center: map.userLocation.coordinate, span: Constants.DefaultSpan)
         map.setRegion(region, animated: false)
+    }
+    
+    func goToLocation(location: CLLocationCoordinate2D)
+    {
+        if CLLocationCoordinate2DIsValid(location){
+            let region = MKCoordinateRegion(center: location, span: Constants.DefaultSpan)
+            map.setRegion(region, animated: false)
+        }
+        else {
+            askForNewLocation(Constants.GoToAlert.ErrorTitle)
+        }
+    }
+
+    
+    func askForNewLocation(withTitle: String)
+    {
+        let gotoAlert = UIAlertController(title: withTitle, message: nil, preferredStyle: UIAlertControllerStyle.Alert)
+        
+        let setAction = UIAlertAction(title: Constants.GoToAlert.Go, style: .Default)
+            { [unowned self] (_) in
+                let latitudeTextField = gotoAlert.textFields![0] as UITextField
+                let longitudeTextField = gotoAlert.textFields![1] as UITextField
+                
+                if let lat = self.nf.numberFromString(latitudeTextField.text!) {
+                    if let lon = self.nf.numberFromString(longitudeTextField.text!) {
+                        let loc = CLLocationCoordinate2D(
+                            latitude: lat.doubleValue,
+                            longitude: lon.doubleValue)
+                        self.goToLocation(loc)
+                    }
+                }
+        }
+        
+        gotoAlert.addTextFieldWithConfigurationHandler
+            { (textField) in
+                textField.keyboardType = UIKeyboardType.DecimalPad
+                textField.placeholder = "Latitude"
+        }
+        //{ (textField) in
+        //            NSNotificationCenter.defaultCenter().addObserverForName(UITextFieldTextDidChangeNotification, object: textField, queue: NSOperationQueue.mainQueue()) { (notification) in
+        //                setAction.enabled = textField.text != ""
+        //            }
+        //        }
+        //
+        gotoAlert.addTextFieldWithConfigurationHandler
+            { (textField) in
+                textField.keyboardType = UIKeyboardType.DecimalPad
+                textField.placeholder = "Longitude"
+        }
+        
+        gotoAlert.addAction(setAction)
+        gotoAlert.addAction(UIAlertAction(title: Constants.Alerts.Cancel, style: UIAlertActionStyle.Default, handler: nil))
+        
+        self.presentViewController(gotoAlert, animated: true, completion: nil)
+        
+    }
+    
+    func askForNewLocation()
+    {
+        askForNewLocation(Constants.GoToAlert.Title)
     }
     
     @IBAction func getSamplingPoints(sender: AnyObject) {
@@ -469,10 +535,12 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         
     }
     
+    private var hasSetUserLocation = false
     func mapView(mapView: MKMapView!,
         didUpdateUserLocation userLocation: MKUserLocation!)
     {
-        goToUserLocation(self)
+        if (!hasSetUserLocation) { goToUserLocation(self) }
+        hasSetUserLocation = true
     }
 /*
     func mapView(mapView: MKMapView!, rendererForOverlay overlay: MKOverlay!) -> MKOverlayRenderer!
