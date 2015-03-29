@@ -125,13 +125,13 @@ class SampleGenerator {
                 fileHandle.closeFile()
             }
             else {
-                println("Can't open fileHandle \(err)")
+                NSLog("Can't open fileHandle \(err)")
             }
-        }
+        }			
         else {
             var err:NSError?
             if !data.writeToURL(fileurl, options: .DataWritingAtomic, error: &err) {
-                println("Can't write \(err)")
+                NSLog("Can't write \(err)")
             }
         }
         return fileurl

@@ -105,12 +105,17 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     // Clear all the annotations and the samples
     func doClear(action: UIAlertAction!)
     {
-        map.removeAnnotations(sampleAnnotations)
-        map.removeAnnotations(fieldAnnotations)
+        annotationsOn = false
+        fieldOn = false
+        heatMapOn = false
+        
         sampleAnnotations.removeAll(keepCapacity: true)
         fieldAnnotations.removeAll(keepCapacity: true)
+        _heatMapDict.removeAllObjects()
+        
         sampler.clear()
         hideSampleTable()
+        
         self.navigationItem.title = Constants.Title
     }
     
@@ -118,12 +123,17 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     // Clear only sample, not the field
     func doClearSample(action: UIAlertAction!)
     {
-        map.removeAnnotations(sampleAnnotations)
+        annotationsOn = false
+        heatMapOn = false
+        
         sampleAnnotations.removeAll(keepCapacity: true)
         sampler.clearSample()
+        _heatMapDict.removeAllObjects()
         
         hideSampleTable()
+
         self.navigationItem.title = Constants.ClearedTitle
+        
     }
 
 
