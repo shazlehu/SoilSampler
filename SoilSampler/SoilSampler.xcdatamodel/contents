@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6751" systemVersion="14C1514" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="Corner" representedClassName="Corner" syncable="YES">
+        <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <relationship name="container" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Field" inverseName="corners" inverseEntity="Field" syncable="YES"/>
+    </entity>
+    <entity name="Field" representedClassName="Field" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="corners" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Corner" inverseName="container" inverseEntity="Corner" syncable="YES"/>
+        <relationship name="samples" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="Sample" inverseName="container" inverseEntity="Sample" syncable="YES"/>
+    </entity>
+    <entity name="Sample" representedClassName="Sample" syncable="YES">
+        <attribute name="depth" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <relationship name="container" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Field" inverseName="samples" inverseEntity="Field" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="Sample" positionX="-479" positionY="41" width="128" height="103"/>
+        <element name="Field" positionX="-713" positionY="-42" width="128" height="88"/>
+        <element name="Corner" positionX="-479" positionY="-88" width="128" height="88"/>
+    </elements>
+</model>

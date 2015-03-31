@@ -24,11 +24,12 @@ import MapKit
 import CoreLocation
 import Foundation
 
-class ViewController: CenterViewController, UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, MKMapViewDelegate
+class ViewController: CenterViewController, UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, MKMapViewDelegate, UITextFieldDelegate
 {
 // MARK: Constants
     private struct Constants {
         static let DefaultSpan = MKCoordinateSpanMake(0.001, 0.001)
+        static let DefaultFieldTitle = "Tap Here to name field"
         struct Alerts {
             static let Title = "Really delete sample points?"
             static let FieldSample = "Delete field and sample"
@@ -55,39 +56,81 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
             static let MapHeightMultiplier :CGFloat = 0.7
         }
     }
+// MARK: Properties
     
-    let sampler = SampleGenerator()
+    let _fieldManager = FieldManager()
 
-    @IBOutlet weak var map: MKMapView! {
+    // Editable field name title
+    var _textField : UITextField! {
         didSet {
-            map.showsUserLocation = true
-            map.mapType = MKMapType.Hybrid
-            map.delegate = self
-            var region = MKCoordinateRegion(center: map.userLocation.coordinate, span: Constants.DefaultSpan)
-            map.setRegion(region, animated: false)
+            _textField.text = Constants.DefaultFieldTitle
+            _textField.textAlignment = NSTextAlignment.Center
+            _textField.clearButtonMode = UITextFieldViewMode.WhileEditing
+            _textField.textColor = UIColor.redColor()
+            self.navigationItem.titleView = _textField
+            
+            _textField.delegate = self
+        }
+    }
+    
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        _fieldManager.setFieldName(textField.text)
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    func newField()
+    {
+        _fieldManager.newField()
+        self.doClear(nil)
+    }
+
+    func deleteField(index: Int)
+    {
+        _fieldManager.savedFields.removeAtIndex(index)
+    }
+    
+    @IBOutlet weak var _map: MKMapView! {
+        didSet {
+            _map.showsUserLocation = true
+            _map.mapType = MKMapType.Hybrid
+            _map.delegate = self
+            var region = MKCoordinateRegion(center: _map.userLocation.coordinate, span: Constants.DefaultSpan)
+            _map.setRegion(region, animated: false)
         }
     }
 
-    var locationManager: LocationManager!
+    var _locationManager: LocationManager!
 
-    @IBOutlet weak var randomOrGrid: UISegmentedControl!
+    @IBOutlet weak var _randomOrGrid: UISegmentedControl!
     
     var sampleAnnotations = [AnyObject]()
     var fieldAnnotations = [AnyObject]()
     
     var mapToolBarConstraint : NSLayoutConstraint!
+    // Editable title field
+    
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // set constraint between toolbar and map so we can change it later
         
-        mapToolBarConstraint = NSLayoutConstraint(item: map, attribute: .Bottom, relatedBy: .Equal, toItem: toolBar, attribute: .Top, multiplier: 1, constant: 0)
+        mapToolBarConstraint = NSLayoutConstraint(item: _map, attribute: .Bottom, relatedBy: .Equal, toItem: toolBar, attribute: .Top, multiplier: 1, constant: 0)
         view.addConstraint(mapToolBarConstraint)
         if view.needsUpdateConstraints() { view.updateConstraints() }
-        locationManager = LocationManager(aSampler: self.sampler, aMap: self.map, aView: self)
+        _locationManager = LocationManager(fieldManager: self._fieldManager, aMap: self._map, aView: self)
+        
+        _textField = UITextField(frame: CGRectMake(0, 0, 200, 22))
+        
     }
-    
+
+    func setCurrentField(index: Int)
+    {
+        _fieldManager._currentField = _fieldManager.savedFields[index]
+        
+    }
     // MARK: IBActions
     
     @IBAction func clear(sender: AnyObject) {
@@ -113,7 +156,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         fieldAnnotations.removeAll(keepCapacity: true)
         _heatMapDict.removeAllObjects()
         
-        sampler.clear()
+        _fieldManager.clear()
         hideSampleTable()
         
         self.navigationItem.title = Constants.Title
@@ -127,7 +170,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         heatMapOn = false
         
         sampleAnnotations.removeAll(keepCapacity: true)
-        sampler.clearSample()
+        _fieldManager.clearSample()
         _heatMapDict.removeAllObjects()
         
         hideSampleTable()
@@ -138,7 +181,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
 
 
     @IBAction func changeSampleNumber(sender: UIStepper) {
-        sampler.sampleDensity = Int(sender.value)
+        _fieldManager.sampleDensity = Int(sender.value)
         self.doClearSample(nil)
         getSamplingPoints(self)
     }
@@ -146,7 +189,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     
     @IBAction func shareFile(sender: AnyObject) {
         
-        let objectsToShare = [Constants.ShareMessage, sampler.writeFile()]
+        let objectsToShare = [Constants.ShareMessage, _fieldManager.writeFile()]
         let activityVC = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
 
         // New Excluded Activities Code
@@ -161,15 +204,15 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     }
 
     @IBAction func goToUserLocation(sender: AnyObject) {
-        let region = MKCoordinateRegion(center: map.userLocation.coordinate, span: Constants.DefaultSpan)
-        map.setRegion(region, animated: false)
+        let region = MKCoordinateRegion(center: _map.userLocation.coordinate, span: Constants.DefaultSpan)
+        _map.setRegion(region, animated: false)
     }
     
     func goToLocation(location: CLLocationCoordinate2D)
     {
         if CLLocationCoordinate2DIsValid(location){
             let region = MKCoordinateRegion(center: location, span: Constants.DefaultSpan)
-            map.setRegion(region, animated: false)
+            _map.setRegion(region, animated: false)
         }
         else {
             askForNewLocation(Constants.GoToAlert.ErrorTitle)
@@ -228,7 +271,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     @IBAction func getSamplingPoints(sender: AnyObject) {
         doClearSample(nil)
         
-        if let points = sampler.generateTestPoints(randomOrGrid.selectedSegmentIndex == 1) {
+        if let points = _fieldManager.generateTestPoints(_randomOrGrid.selectedSegmentIndex == 1) {
         
             for var i = 0; i < points.count; i++ {
             
@@ -237,7 +280,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
                 annotation.setCoordinate(points[i].point)
                 annotation.isCorner = false
                 
-                map.addAnnotation(annotation)
+                _map.addAnnotation(annotation)
                 sampleAnnotations.append(annotation)
             }
 
@@ -257,7 +300,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     
     var takingSamples = false
     func showSampleTable() {
-        if sampler.count == 0 {
+        if _fieldManager.count == 0 {
             let fieldAlert = UIAlertController(title: Constants.Alerts.DefineFieldAndSample, message: nil, preferredStyle: UIAlertControllerStyle.Alert)
             
             fieldAlert.addAction(UIAlertAction(title: Constants.Alerts.OK, style: UIAlertActionStyle.Default, handler: nil))
@@ -266,17 +309,17 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
             
         }
         else if tableView == nil {
-            let mapFrame = self.map.frame
+            let mapFrame = self._map.frame
 
             self.toolBar.deActivate()
             UIView.animateWithDuration(Constants.Table.AnimationDuration) {
-                self.tableView = UITableView(frame: CGRect(x: self.map.frame.origin.x, y: self.map.frame.height, width: self.map.frame.width, height: mapFrame.height * Constants.Table.HeightMultiplier))
+                self.tableView = UITableView(frame: CGRect(x: self._map.frame.origin.x, y: self._map.frame.height, width: self._map.frame.width, height: mapFrame.height * Constants.Table.HeightMultiplier))
                 
-                self.map.frame = CGRect(x: self.map.frame.origin.x, y: self.map.frame.origin.y, width: self.map.frame.width, height: self.map.frame.height * Constants.Table.MapHeightMultiplier)
+                self._map.frame = CGRect(x: self._map.frame.origin.x, y: self._map.frame.origin.y, width: self._map.frame.width, height: self._map.frame.height * Constants.Table.MapHeightMultiplier)
 
                 self.view.addSubview(self.tableView)
                 
-                self.tableView.frame = CGRect(x: self.map.frame.origin.x, y: self.map.frame.height, width: self.map.frame.width, height: mapFrame.height * Constants.Table.HeightMultiplier)
+                self.tableView.frame = CGRect(x: self._map.frame.origin.x, y: self._map.frame.height, width: self._map.frame.width, height: mapFrame.height * Constants.Table.HeightMultiplier)
 
                 self.tableConstraints.append(NSLayoutConstraint(item: self.tableView, attribute: .Bottom, relatedBy: .Equal, toItem: self.toolBar, attribute: .Top, multiplier: 1, constant: 0))
                 self.view.addConstraints(self.tableConstraints)
@@ -314,11 +357,11 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     func stepperValueChanged(sender :UIStepper!)
     {
         if let stepper = sender as? CustomStepper {
-            var s = sampler[stepper.sampleIndex]
+            var s = _fieldManager[stepper.sampleIndex]
             let point = s.point
             
             stepper.label.text! = "(\(nf.stringFromNumber(point.latitude)!),\(nf.stringFromNumber(point.longitude)!), \(sender.value))"
-            sampler[stepper.sampleIndex].depth = sender.value
+            _fieldManager[stepper.sampleIndex].depth = sender.value
             
             stepper.annotation.weight = sender.value
             
@@ -352,17 +395,17 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
             if let cCell = cell as? CustomTableCell {
                 if (lastSelected != nil)
                 {
-                    map.removeAnnotation(lastSelected)
+                    _map.removeAnnotation(lastSelected)
                     lastSelected.isSelected = false
-                    map.addAnnotation(lastSelected)
+                    _map.addAnnotation(lastSelected)
                 }
                 cCell.annotation.isSelected = true
-                map.removeAnnotation(cCell.annotation)
-                map.addAnnotation(cCell.annotation)
+                _map.removeAnnotation(cCell.annotation)
+                _map.addAnnotation(cCell.annotation)
                 lastSelected = cCell.annotation
             }
 
-            map.setCenterCoordinate(lastSelected.coordinate, animated: true)
+            _map.setCenterCoordinate(lastSelected.coordinate, animated: true)
         }
     }
     
@@ -370,7 +413,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     // MARK: UITableViewDataSource Functions
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return sampler.count
+        return _fieldManager.count
     }
     
     // function called to populate the table view
@@ -386,7 +429,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         {
             
             let label = UILabel(frame: CGRect(x:8, y:0, width:200, height:50))
-            let sample = sampler[indexPath.item]
+            let sample = _fieldManager[indexPath.item]
             let point = sample.point
             let cAnnotation = sampleAnnotations[indexPath.item] as CustomAnnotation
             let cell = CustomTableCell(annotation: cAnnotation, style: UITableViewCellStyle(rawValue: 0)!, reuseIdentified:indexPath.description)
@@ -405,7 +448,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
                 var span = MKCoordinateSpanMake(0.001, 0.001)
                 var region = MKCoordinateRegion(center: point, span: span)
                 
-                map.setRegion(region, animated: false)
+                _map.setRegion(region, animated: false)
             }
             return cell
         }
@@ -422,13 +465,13 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
                     hm = HeatMap(data: _heatMapDict)
                 }
                 else {
-                    map.removeOverlay(hm)
+                    _map.removeOverlay(hm)
                     hm.setData(_heatMapDict)
                 }
-                map.addOverlay(hm)
+                _map.addOverlay(hm)
             }
             else if hm != nil {
-                map.removeOverlay(hm)
+                _map.removeOverlay(hm)
             }
         }
     }
@@ -437,10 +480,10 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     var annotationsOn : Bool = true {
         didSet {
             if annotationsOn {
-                map.addAnnotations(sampleAnnotations)
+                _map.addAnnotations(sampleAnnotations)
             }
             else {
-                map.removeAnnotations(sampleAnnotations)
+                _map.removeAnnotations(sampleAnnotations)
             }
         }
     }
@@ -448,10 +491,10 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     var fieldOn : Bool = true {
         didSet {
             if fieldOn {
-                map.addAnnotations(fieldAnnotations)
+                _map.addAnnotations(fieldAnnotations)
             }
             else {
-                map.removeAnnotations(fieldAnnotations)
+                _map.removeAnnotations(fieldAnnotations)
             }
         }
     }
@@ -464,14 +507,14 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         if takingSamples { return }
         
         if sender.state == UIGestureRecognizerState.Began {
-            let mapPoint : CLLocationCoordinate2D = map.convertPoint(sender.locationInView(map), toCoordinateFromView: map)
+            let mapPoint : CLLocationCoordinate2D = _map.convertPoint(sender.locationInView(_map), toCoordinateFromView: _map)
             
-            var annotation = CustomAnnotation(index: sampler.addFieldPoint(mapPoint))
+            var annotation = CustomAnnotation(index: _fieldManager.addFieldPoint(mapPoint))
             
             annotation.isCorner = true
             annotation.setCoordinate(mapPoint)
             
-            map.addAnnotation(annotation)
+            _map.addAnnotation(annotation)
             fieldAnnotations.append(annotation)
             
         }
@@ -495,13 +538,10 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         }
         
         if let a = annotation as? CustomAnnotation {
-            
             if a.isCorner {
                 var pinView = mapView.dequeueReusableAnnotationViewWithIdentifier("Corner") as? MKPinAnnotationView
                 if pinView == nil {
                     let annotationView = CustomAnnotationView(annotation: a, reuseIdentifier: "Corner")
-//                    annotationView.rightCalloutAccessoryView = UIButton.buttonWithType(UIButtonType.DetailDisclosure) as UIButton
-//                    annotationView.canShowCallout = true
                     return annotationView
                 }
                 pinView?.annotation = a
@@ -533,10 +573,10 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         if newState == MKAnnotationViewDragState.Ending {
             if let ca = view.annotation as? CustomAnnotation
             {
-                sampler.updateFieldPoint(ca.fieldIndex, coord: ca.coordinate)
+                _fieldManager.updateFieldPoint(ca.fieldIndex, coord: ca.coordinate)
             }
             view.dragState = MKAnnotationViewDragState.None;
-            if sampler.field.count > 3 {
+            if _fieldManager._currentField.corners.count > 3 {
                 self.doClearSample(nil)
                 getSamplingPoints(self)
             }

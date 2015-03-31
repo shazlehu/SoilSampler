@@ -29,7 +29,7 @@ class ContainerViewController: UIViewController, CenterViewControllerDelegate, S
     var leftViewController: SidePanelViewController?
     var rightViewController: SidePanelViewController?
     
-    let centerPanelExpandedOffset: CGFloat = 60
+    let centerPanelExpandedOffset: CGFloat = 100 //60
     
     override func shouldAutorotate() -> Bool {
         return true
@@ -50,7 +50,7 @@ class ContainerViewController: UIViewController, CenterViewControllerDelegate, S
         centerNavigationController.didMoveToParentViewController(self)
         
         let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: "handlePanGesture:")
-        centerNavigationController.view.addGestureRecognizer(panGestureRecognizer)
+       // centerNavigationController.view.addGestureRecognizer(panGestureRecognizer)
     }
     
     // MARK: CenterViewController delegate methods
@@ -89,12 +89,14 @@ class ContainerViewController: UIViewController, CenterViewControllerDelegate, S
     func addLeftPanelViewController() {
         if (leftViewController == nil) {
             leftViewController = UIStoryboard.leftViewController()
-
+            leftViewController?.delegate = self
             let mapPanel = centerViewController as? ViewController
             
             leftViewController!.mapViewController = mapPanel!
             leftViewController!.settingsController = UIStoryboard.settingsViewController()
             leftViewController!.helpController = UIStoryboard.helpViewController()
+            leftViewController!.savedFieldController = UIStoryboard.savedFieldViewController()
+            
             addChildSidePanelController(leftViewController!)
         }
     }
@@ -108,7 +110,7 @@ class ContainerViewController: UIViewController, CenterViewControllerDelegate, S
     }
     
     func addChildSidePanelController(sidePanelController: SidePanelViewController) {
-        sidePanelController.delegate = self
+        //sidePanelController.delegate = self
         
         view.insertSubview(sidePanelController.view, atIndex: 0)
         
@@ -203,8 +205,7 @@ class ContainerViewController: UIViewController, CenterViewControllerDelegate, S
 }
 
 extension ContainerViewController: SidePanelViewControllerDelegate {
-    func itemSelected(item: MenuItem) {
-        let vc = item._viewController
+    func itemSelected(vc: UIViewController) {
         vc.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Menu", style: .Plain, target: self, action: "toggleLeftPanel")
         self.centerNavigationController.viewControllers = [vc]
         self.collapseSidePanels()
@@ -232,6 +233,10 @@ extension UIStoryboard {
     }
     class func helpViewController() -> UIViewController? {
         return UIStoryboard.mainStoryboard().instantiateViewControllerWithIdentifier("HelpViewController") as? UIViewController
+        
+    }
+    class func savedFieldViewController() -> SavedFieldsTableViewController? {
+        return UIStoryboard.mainStoryboard().instantiateViewControllerWithIdentifier("SavedFieldController") as? SavedFieldsTableViewController
         
     }
 }

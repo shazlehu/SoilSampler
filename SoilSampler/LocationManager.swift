@@ -20,24 +20,24 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
         }
     }
     
-    let manager = CLLocationManager()
-    var sampler : SampleGenerator!
-    var map: MKMapView!
-    var view: UIViewController!
+    let _locationManager = CLLocationManager()
+    var _fieldManager : FieldManager!
+    var _map: MKMapView!
+    var _viewController: UIViewController!
     
-    init(aSampler: SampleGenerator, aMap: MKMapView, aView: UIViewController)
+    init(fieldManager: FieldManager, aMap: MKMapView, aView: UIViewController)
     {
         super.init()
-        sampler = aSampler
-        map = aMap
-        view = aView
-        manager.delegate = self
-        manager.desiredAccuracy = kCLLocationAccuracyBest
-        manager.requestWhenInUseAuthorization()
+        _fieldManager = fieldManager
+        _map = aMap
+        _viewController = aView
+        _locationManager.delegate = self
+        _locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        _locationManager.requestWhenInUseAuthorization()
         
         switch CLLocationManager.authorizationStatus() {
         case .AuthorizedAlways:
-            manager.startUpdatingLocation()
+            _locationManager.startUpdatingLocation()
         case .NotDetermined: fallthrough
         case .AuthorizedWhenInUse, .Restricted, .Denied:
             let alertController = UIAlertController(
@@ -61,7 +61,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
             
             aView.presentViewController(alertController, animated: true, completion: nil)
         default:
-            manager.requestWhenInUseAuthorization()
+            _locationManager.requestWhenInUseAuthorization()
 
         }
     }

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		222BB8A11AC9942D0098F2B4 /* SavedFieldsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 222BB8A01AC9942D0098F2B4 /* SavedFieldsTableViewController.swift */; };
+		223AA9451AC8D2FE000F9DC2 /* SoilSampler.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = 223AA9441AC8D2FE000F9DC2 /* SoilSampler.xcdatamodel */; };
 		228B53B91AC23F98009A1F78 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 228B53B71AC23F98009A1F78 /* LaunchScreen.xib */; };
 		228B53C51AC23F98009A1F78 /* SoilSamplerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228B53C41AC23F98009A1F78 /* SoilSamplerTests.swift */; };
 		228B53D21AC23FFD009A1F78 /* HeatMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 228B53CF1AC23FFD009A1F78 /* HeatMap.m */; };
@@ -14,7 +16,7 @@
 		228B53D51AC2401E009A1F78 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 228B53D41AC2401E009A1F78 /* Main.storyboard */; };
 		228B53D81AC2402D009A1F78 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228B53D71AC2402D009A1F78 /* ViewController.swift */; };
 		228B53E01AC2406A009A1F78 /* CustomTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228B53DA1AC2406A009A1F78 /* CustomTableCell.swift */; };
-		228B53E11AC2406A009A1F78 /* SampleGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228B53DB1AC2406A009A1F78 /* SampleGenerator.swift */; };
+		228B53E11AC2406A009A1F78 /* FieldManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228B53DB1AC2406A009A1F78 /* FieldManager.swift */; };
 		228B53E21AC2406A009A1F78 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228B53DC1AC2406A009A1F78 /* LocationManager.swift */; };
 		228B53E31AC2406A009A1F78 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 228B53DD1AC2406A009A1F78 /* LaunchScreen.xib */; };
 		228B53E41AC2406A009A1F78 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 228B53DE1AC2406A009A1F78 /* Images.xcassets */; };
@@ -38,6 +40,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		222BB8A01AC9942D0098F2B4 /* SavedFieldsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SavedFieldsTableViewController.swift; sourceTree = "<group>"; };
+		223AA9441AC8D2FE000F9DC2 /* SoilSampler.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SoilSampler.xcdatamodel; sourceTree = "<group>"; };
 		228B53A91AC23F98009A1F78 /* SoilSampler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SoilSampler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		228B53B81AC23F98009A1F78 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		228B53BE1AC23F98009A1F78 /* SoilSamplerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SoilSamplerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -51,7 +55,7 @@
 		228B53D71AC2402D009A1F78 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		228B53D91AC24048009A1F78 /* SoilSampler-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SoilSampler-Bridging-Header.h"; sourceTree = "<group>"; };
 		228B53DA1AC2406A009A1F78 /* CustomTableCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomTableCell.swift; sourceTree = "<group>"; };
-		228B53DB1AC2406A009A1F78 /* SampleGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleGenerator.swift; sourceTree = "<group>"; };
+		228B53DB1AC2406A009A1F78 /* FieldManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FieldManager.swift; sourceTree = "<group>"; };
 		228B53DC1AC2406A009A1F78 /* LocationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		228B53DD1AC2406A009A1F78 /* LaunchScreen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LaunchScreen.xib; sourceTree = "<group>"; };
 		228B53DE1AC2406A009A1F78 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
@@ -105,10 +109,11 @@
 			children = (
 				228B53D41AC2401E009A1F78 /* Main.storyboard */,
 				228B53D71AC2402D009A1F78 /* ViewController.swift */,
-				228B53DB1AC2406A009A1F78 /* SampleGenerator.swift */,
+				228B53DB1AC2406A009A1F78 /* FieldManager.swift */,
 				228B53B71AC23F98009A1F78 /* LaunchScreen.xib */,
 				228B53EE1AC240AE009A1F78 /* CustomAnnotation.swift */,
 				228B53DA1AC2406A009A1F78 /* CustomTableCell.swift */,
+				223AA9441AC8D2FE000F9DC2 /* SoilSampler.xcdatamodel */,
 				228B53DC1AC2406A009A1F78 /* LocationManager.swift */,
 				228B53AC1AC23F98009A1F78 /* Supporting Files */,
 			);
@@ -149,6 +154,7 @@
 		228B53F21AC242F6009A1F78 /* Side Menu */ = {
 			isa = PBXGroup;
 			children = (
+				222BB8A01AC9942D0098F2B4 /* SavedFieldsTableViewController.swift */,
 				228B53E61AC240A6009A1F78 /* SidePanelViewController.swift */,
 				228B53E71AC240A6009A1F78 /* SettingsViewController.swift */,
 				228B53E81AC240A6009A1F78 /* CenterViewController.swift */,
@@ -270,6 +276,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				222BB8A11AC9942D0098F2B4 /* SavedFieldsTableViewController.swift in Sources */,
 				228B53F11AC241E4009A1F78 /* AppDelegate.swift in Sources */,
 				228B53D81AC2402D009A1F78 /* ViewController.swift in Sources */,
 				228B53D21AC23FFD009A1F78 /* HeatMap.m in Sources */,
@@ -279,9 +286,10 @@
 				228B53D31AC23FFD009A1F78 /* HeatMapView.m in Sources */,
 				228B53EF1AC240AE009A1F78 /* CustomAnnotation.swift in Sources */,
 				228B53EA1AC240A6009A1F78 /* SidePanelViewController.swift in Sources */,
-				228B53E11AC2406A009A1F78 /* SampleGenerator.swift in Sources */,
+				228B53E11AC2406A009A1F78 /* FieldManager.swift in Sources */,
 				228B53E01AC2406A009A1F78 /* CustomTableCell.swift in Sources */,
 				228B53EB1AC240A6009A1F78 /* SettingsViewController.swift in Sources */,
+				223AA9451AC8D2FE000F9DC2 /* SoilSampler.xcdatamodel in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

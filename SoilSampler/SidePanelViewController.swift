@@ -24,20 +24,20 @@ class MenuItem {
 }
 
 protocol SidePanelViewControllerDelegate {
-    func itemSelected(item: MenuItem)
+    func itemSelected(item: UIViewController)
 }
 
 class SidePanelViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     @IBOutlet weak var tableView: UITableView!
     
     var delegate: SidePanelViewControllerDelegate?
-    var menuItems: Array<MenuItem> = [MenuItem]()
+    var menuItems = [MenuItem]()
     var mapViewController: ViewController! {
         didSet {
-            addMenuItem("Define Field Boundaries", vc: mapViewController, action: {[unowned self] in self.mapViewController.hideSampleTable()})
+            addMenuItem("Current Field", vc: mapViewController, action: {[unowned self] in self.mapViewController.hideSampleTable()})
+            addMenuItem("Collect Samples", vc: mapViewController, action: {[unowned self] in self.mapViewController.showSampleTable()})
             addMenuItem("Toggle Heatmap", vc: mapViewController, action:
                 {[unowned self] in self.mapViewController.heatMapOn = !self.mapViewController.heatMapOn})
-            addMenuItem("Collect Samples", vc: mapViewController, action: {[unowned self] in self.mapViewController.showSampleTable()})
             addMenuItem("Toggle Sample Annotations", vc: mapViewController, action: {[unowned self] in self.mapViewController.annotationsOn = !self.mapViewController.annotationsOn})
             addMenuItem("Toggle Field Annotations", vc: mapViewController, action: {[unowned self] in self.mapViewController.fieldOn = !self.mapViewController.fieldOn})
             addMenuItem("Go to location", vc: mapViewController, action: {[unowned self] in self.mapViewController.askForNewLocation()})
@@ -53,6 +53,14 @@ class SidePanelViewController: UIViewController, UITableViewDataSource, UITableV
     var helpController: UIViewController! {
         didSet {
             addMenuItem("Help", vc: helpController, action: {})
+        }
+    }
+    
+    var savedFieldController: SavedFieldsTableViewController! {
+        didSet {
+            addMenuItem("Saved Fields", vc: savedFieldController, action: {})
+            savedFieldController.mapViewController = mapViewController
+            savedFieldController.delegate = self.delegate
         }
     }
     
@@ -101,8 +109,8 @@ class SidePanelViewController: UIViewController, UITableViewDataSource, UITableV
             cell.accessoryView?.hidden = false
             cell.accessoryView?.setNeedsDisplay()
         }
-        cell.configureFor(menuItems[indexPath.row])
-        delegate?.itemSelected(menuItems[indexPath.row])
+        //cell.configureFor(menuItems[indexPath.row])
+        delegate?.itemSelected(menuItems[indexPath.row]._viewController)
         menuItems[indexPath.row].doAction()
     }
     
