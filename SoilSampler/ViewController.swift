@@ -58,9 +58,20 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         _textField.textColor = UIColor.redColor()
     }
 
-    func deleteField(index: Int)
+    func deleteField(index: Int) -> Bool
     {
-        _fieldManager.savedFields.removeAtIndex(index)
+        if (_fieldManager.savedFields.count == 1)
+        {
+            let cancelAlert = UIAlertController(title: Constants.Alerts.CantDeleteLastField, message: nil, preferredStyle: UIAlertControllerStyle.Alert)
+            cancelAlert.addAction(UIAlertAction(title: Constants.Alerts.OK, style: UIAlertActionStyle.Default, handler: nil))
+            self.presentViewController(cancelAlert, animated: true, completion: nil)
+            return false
+        }
+        else {
+            _fieldManager.deleteField(index)
+            setCurrentField(_fieldManager._currentFieldIndex)
+            return true
+        }
     }
     
     @IBOutlet weak var _map: MKMapView! {
@@ -121,11 +132,18 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     }
     func setCurrentField(index: Int)
     {
-        _fieldManager._currentField = _fieldManager.savedFields[index]
+        hideSampleTable()
+        heatMapOn = false
+        _fieldManager._currentFieldIndex = index
         _map.removeAnnotations(sampleAnnotations)
         _map.removeAnnotations(fieldAnnotations)
+        sampleAnnotations.removeAll(keepCapacity: true)
+        fieldAnnotations.removeAll(keepCapacity: true)
+        
         addAnnotationsForCurrentField()
         _textField.text = _fieldManager._currentField.name
+        _textField.textColor = UIColor.blackColor()
+        
     }
     // MARK: IBActions
     
@@ -150,8 +168,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         
         sampleAnnotations.removeAll(keepCapacity: true)
         fieldAnnotations.removeAll(keepCapacity: true)
-        _heatMapDict.removeAllObjects()
-        
+
         _fieldManager.clear()
         hideSampleTable()
         
@@ -167,8 +184,6 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         
         sampleAnnotations.removeAll(keepCapacity: true)
         _fieldManager.clearSample()
-        _heatMapDict.removeAllObjects()
-        
         hideSampleTable()
 
         self.navigationItem.title = Constants.ClearedTitle
@@ -185,7 +200,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     
     @IBAction func shareFile(sender: AnyObject) {
         
-        let objectsToShare = [Constants.ShareMessage, _fieldManager.saveCurrentField()]
+        let objectsToShare = [Constants.ShareMessage, _fieldManager.saveCurrentField()!]
         let activityVC = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
 
         // New Excluded Activities Code
@@ -344,30 +359,16 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         }
         
     }
-    
 
-    private var _heatMapDict: NSMutableDictionary = NSMutableDictionary()
-    
     // callback for steppers in sample table
     
     func stepperValueChanged(sender :UIStepper!)
     {
         if let stepper = sender as? CustomStepper {
-            var s = _fieldManager[stepper.sampleIndex]
-            let point = s.point
+            let point = _fieldManager[stepper.sampleIndex].point
             
             stepper.label.text! = "(\(nf.stringFromNumber(point.latitude)!),\(nf.stringFromNumber(point.longitude)!), \(sender.value))"
             _fieldManager[stepper.sampleIndex].depth = sender.value
-            
-            stepper.annotation.weight = sender.value
-            
-            var mp = MKMapPointForCoordinate(point)
-            
-            // hack b/c we don't have @encode
-            let obType = NSValue(MKCoordinate: point).objCType
-            let pointValue = NSValue(bytes: &mp, objCType: obType)
-            
-            _heatMapDict.setObject(NSNumber(double: s.depth), forKey: pointValue)
         }
     }
 
@@ -458,11 +459,11 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         didSet {
             if heatMapOn {
                 if hm == nil {
-                    hm = HeatMap(data: _heatMapDict)
+                    hm = HeatMap(data: _fieldManager._currentField.heatMapDict)
                 }
                 else {
                     _map.removeOverlay(hm)
-                    hm.setData(_heatMapDict)
+                    hm.setData(_fieldManager._currentField.heatMapDict)
                 }
                 _map.addOverlay(hm)
             }
@@ -618,6 +619,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         static let DefaultSpan = MKCoordinateSpanMake(0.001, 0.001)
         static let DefaultFieldTitle = "Tap Here to name field"
         struct Alerts {
+            static let CantDeleteLastField = "You must have at least one field."
             static let Title = "Really delete sample points?"
             static let FieldSample = "Delete field and sample"
             static let SampleOnly = "Delete sample"

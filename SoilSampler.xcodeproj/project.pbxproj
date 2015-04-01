@@ -156,9 +156,8 @@
 			children = (
 				222BB8A01AC9942D0098F2B4 /* SavedFieldsTableViewController.swift */,
 				228B53E61AC240A6009A1F78 /* SidePanelViewController.swift */,
-				228B53E71AC240A6009A1F78 /* SettingsViewController.swift */,
-				228B53E81AC240A6009A1F78 /* CenterViewController.swift */,
 				228B53E91AC240A6009A1F78 /* ContainerViewController.swift */,
+				22BCA0921ACB7D16000FD36A /* Supporting */,
 			);
 			name = "Side Menu";
 			sourceTree = "<group>";
@@ -172,6 +171,15 @@
 				228B53D01AC23FFD009A1F78 /* HeatMapView.h */,
 			);
 			name = "Heat Map";
+			sourceTree = "<group>";
+		};
+		22BCA0921ACB7D16000FD36A /* Supporting */ = {
+			isa = PBXGroup;
+			children = (
+				228B53E71AC240A6009A1F78 /* SettingsViewController.swift */,
+				228B53E81AC240A6009A1F78 /* CenterViewController.swift */,
+			);
+			name = Supporting;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

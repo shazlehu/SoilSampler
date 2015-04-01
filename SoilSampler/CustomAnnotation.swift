@@ -19,7 +19,6 @@ class CustomAnnotation: NSObject, MKAnnotation {
     var isSelected: Bool = false
     var isCorner: Bool = false
     var coordinate = CLLocationCoordinate2D(latitude: 0,longitude: 0)
-    var weight : Double = 0.0
     
     var coord : CLLocation { get { return CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude) }}
     func setCoordinate(newCoordinate: CLLocationCoordinate2D) {

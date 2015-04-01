@@ -39,6 +39,7 @@ public extension CLLocationCoordinate2D {
 }
 
 class Sample : Printable {
+    
     var point : CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: 0,longitude: 0)
     var depth : Double = 0.0
     
@@ -68,14 +69,37 @@ class Field {
     var samples = [Sample]()
     var corners = [CLLocationCoordinate2D]()
     var date = NSDate()
-    init(named: String) { name = named }
+    init(named: String) {
+        name = named
+
+    }
+    var heatMapDict: NSMutableDictionary {
+        get {
+            let hmDict = NSMutableDictionary()
+            for s in samples {
+                var mp = MKMapPointForCoordinate(s.point)
+
+                // hack b/c we don't have @encode
+                let obType = NSValue(MKCoordinate: s.point).objCType
+                let pointValue = NSValue(bytes: &mp, objCType: obType)
+            // should the heat map dictionary belong to the Field object?
+                hmDict.setObject(NSNumber(double: s.depth), forKey: pointValue)
+            }
+            return hmDict
+        }
+    }
 }
 
 class FieldManager {
     
     var savedFields = [Field]()
 
-    var _currentField: Field!
+    var _currentFieldIndex = 0
+    var _currentField: Field {
+        get {
+            return savedFields[_currentFieldIndex]
+        }
+    }
 
     var count : Int { get { return _currentField.samples.count } }
     
@@ -90,17 +114,16 @@ class FieldManager {
             _currentField.samples[index] = newValue
         }
     }
+    let dateFormatter = NSDateFormatter()
     
     init()
     {
+        dateFormatter.timeStyle = NSDateFormatterStyle.FullStyle
+        dateFormatter.dateStyle = NSDateFormatterStyle.FullStyle
+        
         loadFieldsFromFile()
-        if savedFields.count > 0 {
-            _currentField = savedFields[0]
-        }
-        else {
-            
+        if savedFields.count == 0 {
             savedFields.append(Field(named: "Untitled"))
-            _currentField = savedFields.last
         }
     }
     
@@ -109,7 +132,34 @@ class FieldManager {
     {
         saveCurrentField()
         savedFields.append(Field(named: "Untitled"))
-        _currentField = savedFields.last
+        _currentFieldIndex = savedFields.endIndex - 1
+    }
+    
+    func deleteField(index: Int)
+    {
+        // delete file
+        let fileManager = NSFileManager.defaultManager()
+        let dir : NSURL = fileManager.URLsForDirectory(NSSearchPathDirectory.DocumentDirectory, inDomains: NSSearchPathDomainMask.UserDomainMask).last as NSURL
+        var err:NSError?
+        let fileURL =  dir.URLByAppendingPathComponent("\(savedFields[index].name).csv")
+        
+        if fileManager.fileExistsAtPath(fileURL.path!) {
+            // delete old file
+            fileManager.removeItemAtURL(fileURL, error: &err)
+        }
+        
+        if (err != nil)
+        {
+            NSLog(err!.localizedDescription)
+        }
+        
+        // delete in array
+        savedFields.removeAtIndex(index)
+        
+        if _currentFieldIndex == index {
+            _currentFieldIndex--
+        }
+
     }
     
     func setFieldName(name: String)
@@ -170,16 +220,18 @@ class FieldManager {
             }
         }
     }
-    
+
     func loadFieldsFromFile()
     {
         let fileManager = NSFileManager.defaultManager()
         let dir : NSURL = fileManager.URLsForDirectory(NSSearchPathDirectory.DocumentDirectory, inDomains: NSSearchPathDomainMask.UserDomainMask).last as NSURL
         
         var err:NSError?
-        let dateFormatter = NSDateFormatter()
-        if let files =  fileManager.contentsOfDirectoryAtURL(dir, includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions.SkipsHiddenFiles, error: &err) as? [NSURL] {
 
+        if let files =  fileManager.contentsOfDirectoryAtURL(dir, includingPropertiesForKeys: nil,
+            options: NSDirectoryEnumerationOptions.SkipsHiddenFiles, error: &err)
+            as? [NSURL]
+        {
             for (var i = 0; i < files.count; i++) {
                 if let fileHandle = NSFileHandle(forReadingFromURL: files[i], error: &err) {
                     let data = NSString(data: fileHandle.readDataToEndOfFile(), encoding: NSUTF8StringEncoding) as String
@@ -210,7 +262,7 @@ class FieldManager {
                                     point : CLLocationCoordinate2D(
                                         latitude: (sampleVals[1] as NSString).doubleValue,
                                         longitude: (sampleVals[2] as NSString).doubleValue),
-                                    depth: (sampleVals[2] as NSString).doubleValue))
+                                    depth: (sampleVals[3] as NSString).doubleValue))
                         default:
                             NSLog("Unknown type in saved field file!")
                         }
@@ -221,8 +273,10 @@ class FieldManager {
                 else {
                     NSLog("Can't open fileHandle \(err)")
                 }
-
             }
+            // sort files by date
+            savedFields.sort({($0 as Field).date.compare(($1 as Field).date) == NSComparisonResult.OrderedAscending })
+            
         }
     }
     
@@ -233,16 +287,17 @@ class FieldManager {
         }
     }
     
-    func saveField(field: Field) -> NSURL
+    func saveField(field: Field) -> NSURL?
     {
-        let dir : NSURL = NSFileManager.defaultManager().URLsForDirectory(NSSearchPathDirectory.DocumentDirectory, inDomains: NSSearchPathDomainMask.UserDomainMask).last as NSURL
+        let fileManager = NSFileManager.defaultManager()
+
+        let dir : NSURL = fileManager.URLsForDirectory(NSSearchPathDirectory.DocumentDirectory, inDomains: NSSearchPathDomainMask.UserDomainMask).last as NSURL
         var err:NSError?
-        let files = NSFileManager.defaultManager().contentsOfDirectoryAtURL(dir, includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions.SkipsHiddenFiles, error: &err) as? [NSURL]
-        
         let fileURL =  dir.URLByAppendingPathComponent("\(field.name).csv")
         
-        var string : String = "\(NSDate())\n"
-        
+        // date at top of the file
+        var string = dateFormatter.stringFromDate(field.date) + "\n"
+
         for c in field.corners {
             string += "\(c.description)\n"
         }
@@ -250,20 +305,21 @@ class FieldManager {
             string += "\(s.description)\n"
         }
         
-        let data = string.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)!
-        
-        let fileManager = NSFileManager.defaultManager()
-        if fileManager.fileExistsAtPath(fileURL.path!) {
-            // delete old file
-            fileManager.removeItemAtURL(fileURL, error: &err)
-        }
-        if !data.writeToURL(fileURL, options: .DataWritingAtomic, error: &err) {
-            NSLog("Can't write \(err)")
+        if let data = string.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false) {
+            
+            if fileManager.fileExistsAtPath(fileURL.path!) {
+                // delete old file
+                fileManager.removeItemAtURL(fileURL, error: &err)
+            }
+            if !data.writeToURL(fileURL, options: .DataWritingAtomic, error: &err) {
+                NSLog("Can't write \(err)")
+                return nil
+            }
         }
         return fileURL
     }
     
-    func saveCurrentField() -> NSURL
+    func saveCurrentField() -> NSURL?
     {
         return saveField(_currentField)
     }

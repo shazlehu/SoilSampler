@@ -62,7 +62,7 @@ class SavedFieldsTableViewController: UITableViewController, UIAlertViewDelegate
 
         // Configure the cell...
         cell.fieldName.text = mapViewController._fieldManager.savedFields[indexPath.item].name
-        
+        cell.date.text = NSDateFormatter.localizedStringFromDate(mapViewController._fieldManager.savedFields[indexPath.item].date, dateStyle: NSDateFormatterStyle.MediumStyle, timeStyle: NSDateFormatterStyle.ShortStyle)
         return cell
     }
     
@@ -76,23 +76,25 @@ class SavedFieldsTableViewController: UITableViewController, UIAlertViewDelegate
     
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if (editingStyle == .Delete) {
+            _fieldToDelete = indexPath
+            
             let cancelAlert = UIAlertController(title: "Delete field: " + mapViewController._fieldManager.savedFields[indexPath.item].name + "?", message: nil, preferredStyle: UIAlertControllerStyle.Alert)
             
             cancelAlert.addAction(UIAlertAction(title: "Delete", style: UIAlertActionStyle.Destructive, handler: deleteField))
-            _fieldToDelete = indexPath
+
             cancelAlert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Default, handler: nil))
             
             self.presentViewController(cancelAlert, animated: true, completion: nil)
-            
-
         }
     }
+    
     func deleteField(action: UIAlertAction!)
     {
-        mapViewController.deleteField(_fieldToDelete!.item)
-        var paths = [AnyObject]()
-        paths.append(_fieldToDelete!)
-        tableView.deleteRowsAtIndexPaths(paths, withRowAnimation: UITableViewRowAnimation.Automatic)
+        if mapViewController.deleteField(_fieldToDelete!.item) {
+            var paths = [AnyObject]()
+            paths.append(_fieldToDelete!)
+            tableView.deleteRowsAtIndexPaths(paths, withRowAnimation: UITableViewRowAnimation.Automatic)
+        }
     }
     /*
     // Override to support conditional editing of the table view.
