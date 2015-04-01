@@ -18,6 +18,8 @@ class CustomAnnotation: NSObject, MKAnnotation {
     var fieldIndex: Int
     var isSelected: Bool = false
     var isCorner: Bool = false
+    var isDraggable: Bool = true
+    
     var coordinate = CLLocationCoordinate2D(latitude: 0,longitude: 0)
     
     var coord : CLLocation { get { return CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude) }}
@@ -36,7 +38,7 @@ class CustomAnnotationView: MKAnnotationView {
     {
         super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
         self.image = UIImage(named: "draggable_icon")
-        self.draggable = true
+        self.draggable = (annotation as CustomAnnotation).isDraggable
     }
     
     required init(coder aDecoder: NSCoder) {

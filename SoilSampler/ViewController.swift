@@ -34,7 +34,11 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     var _textField : UITextField! {
         didSet {
             _textField.textColor = UIColor.redColor()
-            _textField.text = _fieldManager._currentField.name
+            if _fieldManager._currentField.name != FieldConstants.DefaultName {
+                _textField.text = _fieldManager._currentField.name
+            } else {
+                _textField.text = Constants.DefaultFieldTitle
+            }
             _textField.textAlignment = NSTextAlignment.Center
             _textField.clearButtonMode = UITextFieldViewMode.WhileEditing
             _textField.delegate = self
@@ -114,15 +118,16 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     func addAnnotationsForCurrentField()
     {
         // place any annotations saved in the current field
-        for (var i = 0; i < _fieldManager._currentField.corners.count; i++) {
-            addFieldCorner(_fieldManager._currentField.corners[i], fieldIndex: i)
+        for (index, corner) in enumerate(_fieldManager._currentField.corners) {
+            let newCorner = addFieldCorner(corner, fieldIndex: index)
+            newCorner.isDraggable = _fieldManager._currentField.isEditable
         }
         
-        for var i = 0; i < _fieldManager._currentField.samples.count; i++ {
+        for (index, sample) in enumerate(_fieldManager._currentField.samples) {
             
-            var annotation = CustomAnnotation(index: i)
+            var annotation = CustomAnnotation(index: index)
             
-            annotation.setCoordinate(_fieldManager._currentField.samples[i].point)
+            annotation.setCoordinate(sample.point)
             annotation.isCorner = false
             
             _map.addAnnotation(annotation)
@@ -140,10 +145,13 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         sampleAnnotations.removeAll(keepCapacity: true)
         fieldAnnotations.removeAll(keepCapacity: true)
         
+        if _fieldManager._currentField.isEditable { toolBar.activate() }
+        else { toolBar.deActivate() }
+        
         addAnnotationsForCurrentField()
+        
         _textField.text = _fieldManager._currentField.name
         _textField.textColor = UIColor.blackColor()
-        
     }
     // MARK: IBActions
     
@@ -282,13 +290,13 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     @IBAction func getSamplingPoints(sender: AnyObject) {
         doClearSample(nil)
         
-        if let points = _fieldManager.generateTestPoints(_randomOrGrid.selectedSegmentIndex == 1) {
+        if let samples = _fieldManager.generateTestPoints(_randomOrGrid.selectedSegmentIndex == 1) {
         
-            for var i = 0; i < points.count; i++ {
+            for (i, sample) in enumerate(samples) {
             
                 var annotation = CustomAnnotation(index: i)
         
-                annotation.setCoordinate(points[i].point)
+                annotation.setCoordinate(sample.point)
                 annotation.isCorner = false
                 
                 _map.addAnnotation(annotation)
@@ -309,7 +317,6 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     
     // MARK: Sample Table Functions
     
-    var takingSamples = false
     func showSampleTable() {
         if _fieldManager.count == 0 {
             let fieldAlert = UIAlertController(title: Constants.Alerts.DefineFieldAndSample, message: nil, preferredStyle: UIAlertControllerStyle.Alert)
@@ -323,6 +330,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
             let mapFrame = self._map.frame
 
             self.toolBar.deActivate()
+            _fieldManager._currentField.isEditable = false
             UIView.animateWithDuration(Constants.Table.AnimationDuration) {
                 self.tableView = UITableView(frame: CGRect(x: self._map.frame.origin.x, y: self._map.frame.height, width: self._map.frame.width, height: mapFrame.height * Constants.Table.HeightMultiplier))
                 
@@ -336,8 +344,6 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
                 self.view.addConstraints(self.tableConstraints)
                 
                 if self.view.needsUpdateConstraints() { self.view.updateConstraints() }
-                self.takingSamples = true
-                
             }
         }
     }
@@ -353,8 +359,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
                 
                 if self.view.needsUpdateConstraints() { self.view.updateConstraints() }
                 self.tableView = nil
-                self.toolBar.activate()
-                self.takingSamples = false
+                if self._fieldManager._currentField.isEditable { self.toolBar.activate() }
             }
         }
         
@@ -498,7 +503,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
 
     // MARK: MapView Delegate Functions
   
-    func addFieldCorner(coord: CLLocationCoordinate2D, fieldIndex: Int)
+    func addFieldCorner(coord: CLLocationCoordinate2D, fieldIndex: Int) -> CustomAnnotation
     {
         var annotation = CustomAnnotation(index: fieldIndex)
         
@@ -507,12 +512,12 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         
         _map.addAnnotation(annotation)
         fieldAnnotations.append(annotation)
- 
+        return annotation
     }
     
     @IBAction func addFieldCorner(sender: UILongPressGestureRecognizer)
     {
-        if takingSamples { return }
+        if !_fieldManager._currentField.isEditable { return }
         
         if sender.state == UIGestureRecognizerState.Began {
             let coord : CLLocationCoordinate2D = _map.convertPoint(sender.locationInView(_map), toCoordinateFromView: _map)

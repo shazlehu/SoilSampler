@@ -63,15 +63,20 @@ extension CLLocationCoordinate2D : Printable {
         }
     }
 }
+struct FieldConstants {
+    static let DefaultName = "Untitled"
+}
 
 class Field {
+    
     var name: String!
     var samples = [Sample]()
     var corners = [CLLocationCoordinate2D]()
     var date = NSDate()
+    var isEditable : Bool = true
+    
     init(named: String) {
         name = named
-
     }
     var heatMapDict: NSMutableDictionary {
         get {
@@ -97,6 +102,9 @@ class FieldManager {
     var _currentFieldIndex = 0
     var _currentField: Field {
         get {
+            if _currentFieldIndex > savedFields.count {
+                return savedFields.last!
+            }
             return savedFields[_currentFieldIndex]
         }
     }
@@ -123,7 +131,7 @@ class FieldManager {
         
         loadFieldsFromFile()
         if savedFields.count == 0 {
-            savedFields.append(Field(named: "Untitled"))
+            savedFields.append(Field(named: FieldConstants.DefaultName))
         }
     }
     
@@ -131,7 +139,18 @@ class FieldManager {
     func newField()
     {
         saveCurrentField()
-        savedFields.append(Field(named: "Untitled"))
+        let names = savedFields.map {
+            (f: Field) -> String in
+            return f.name
+        }
+        
+        var newName : String = FieldConstants.DefaultName
+        var suffix = 1
+        while ((names.filter {$0 == newName}).count > 0) {
+            newName = FieldConstants.DefaultName + "-\(suffix++)"
+        }
+        
+        savedFields.append(Field(named: newName))
         _currentFieldIndex = savedFields.endIndex - 1
     }
     
@@ -156,7 +175,7 @@ class FieldManager {
         // delete in array
         savedFields.removeAtIndex(index)
         
-        if _currentFieldIndex == index {
+        if _currentFieldIndex >= index {
             _currentFieldIndex--
         }
 
@@ -264,10 +283,13 @@ class FieldManager {
                                         longitude: (sampleVals[2] as NSString).doubleValue),
                                     depth: (sampleVals[3] as NSString).doubleValue))
                         default:
-                            NSLog("Unknown type in saved field file!")
+                            break
                         }
+                        let nonZeroSamples = savedFields[i].samples.map {
+                            (sample : Sample) -> Bool in sample.depth > 0
+                        }
+                        savedFields[i].isEditable = (nonZeroSamples.count == 0)
                     }
-                    
                     fileHandle.closeFile()
                 }
                 else {

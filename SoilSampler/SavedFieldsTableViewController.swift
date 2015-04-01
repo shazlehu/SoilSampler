@@ -60,9 +60,10 @@ class SavedFieldsTableViewController: UITableViewController, UIAlertViewDelegate
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("SavedFieldsTableCell", forIndexPath: indexPath) as SavedFieldsTableCell
 
+        let field = mapViewController._fieldManager.savedFields[indexPath.item]
         // Configure the cell...
-        cell.fieldName.text = mapViewController._fieldManager.savedFields[indexPath.item].name
-        cell.date.text = NSDateFormatter.localizedStringFromDate(mapViewController._fieldManager.savedFields[indexPath.item].date, dateStyle: NSDateFormatterStyle.MediumStyle, timeStyle: NSDateFormatterStyle.ShortStyle)
+        cell.fieldName.text = field.name
+        cell.date.text = NSDateFormatter.localizedStringFromDate(field.date, dateStyle: NSDateFormatterStyle.MediumStyle, timeStyle: NSDateFormatterStyle.ShortStyle)
         return cell
     }
     
