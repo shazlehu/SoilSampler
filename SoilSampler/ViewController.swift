@@ -79,7 +79,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
             _map.showsUserLocation = true
             _map.mapType = MKMapType.Hybrid
             _map.delegate = self
-            var region = MKCoordinateRegion(center: _map.userLocation.coordinate, span: Constants.DefaultSpan)
+            var region = MKCoordinateRegion(center: _map.userLocation.coordinate, span: Constants.StartSpan)
             _map.setRegion(region, animated: false)
         }
     }
@@ -216,7 +216,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
 
     @IBAction func goToUserLocation(sender: AnyObject) {
         let region = MKCoordinateRegion(center: _map.userLocation.coordinate, span: Constants.DefaultSpan)
-        _map.setRegion(region, animated: false)
+        _map.setRegion(region, animated: true)
     }
     
     func goToLocation(location: CLLocationCoordinate2D)
@@ -617,6 +617,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     // MARK: Constants
     private struct Constants {
         static let DefaultSpan = MKCoordinateSpanMake(0.001, 0.001)
+        static let StartSpan = MKCoordinateSpanMake(90,180)
         static let DefaultFieldTitle = "Tap Here to name field"
         struct Alerts {
             static let CantDeleteLastField = "You must have at least one field."
