@@ -16,9 +16,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(application: UIApplication!, didFinishLaunchingWithOptions launchOptions: NSDictionary!) -> Bool {
 //        window = UIWindow(frame: UIScreen.mainScreen().bounds)
-        
-        let containerViewController = ContainerViewController()
-        self.window?.rootViewController = containerViewController
+
+        self.window?.rootViewController = ContainerViewController()
         self.window?.makeKeyAndVisible()
 
         return true
@@ -38,10 +37,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
         
-        if let vc = self.window?.rootViewController as? ViewController
-        {
-            // write out SampleGenerator to disk
-        }
     }
 
     func applicationWillEnterForeground(application: UIApplication) {
@@ -54,6 +49,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+        if let cvc = self.window?.rootViewController as? ContainerViewController
+        {
+            if let vc = cvc.centerViewController as? ViewController {
+                vc._fieldManager.saveAllFields()
+                println("fields saved")
+            }
+        }
     }
 
     

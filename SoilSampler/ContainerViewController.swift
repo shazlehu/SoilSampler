@@ -27,7 +27,7 @@ class ContainerViewController: UIViewController, CenterViewControllerDelegate, S
     }
     
     var leftViewController: SidePanelViewController?
-    var rightViewController: SidePanelViewController?
+    var rightViewController: SavedFieldsTableViewController?
     
     let centerPanelExpandedOffset: CGFloat = 100 //60
     
@@ -95,7 +95,7 @@ class ContainerViewController: UIViewController, CenterViewControllerDelegate, S
             leftViewController!.mapViewController = mapPanel!
             leftViewController!.settingsController = UIStoryboard.settingsViewController()
             leftViewController!.helpController = UIStoryboard.helpViewController()
-            leftViewController!.savedFieldController = UIStoryboard.savedFieldViewController()
+           // leftViewController!.savedFieldController = UIStoryboard.savedFieldViewController()
             
             addChildSidePanelController(leftViewController!)
         }
@@ -103,14 +103,18 @@ class ContainerViewController: UIViewController, CenterViewControllerDelegate, S
     
     func addRightPanelViewController() {
         if (rightViewController == nil) {
-            rightViewController = UIStoryboard.rightViewController()
+            rightViewController = UIStoryboard.savedFieldViewController()
+            rightViewController?.delegate = self
+            rightViewController?.mapViewController = centerViewController as ViewController
             
             addChildSidePanelController(rightViewController!)
         }
     }
     
-    func addChildSidePanelController(sidePanelController: SidePanelViewController) {
-        //sidePanelController.delegate = self
+    func addChildSidePanelController(sidePanelController: UIViewController) {
+        if sidePanelController is SavedFieldsTableViewController {
+            (sidePanelController as SavedFieldsTableViewController).delegate = self
+        }
         
         view.insertSubview(sidePanelController.view, atIndex: 0)
         

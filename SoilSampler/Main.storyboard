@@ -2,7 +2,6 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6751" systemVersion="14C1514" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="ey4-Pc-TlQ">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
-        <capability name="Alignment constraints to the first baseline" minToolsVersion="6.0"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -24,7 +23,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cP8-lb-FzP" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="41" y="62"/>
+            <point key="canvasLocation" x="-29" y="62"/>
         </scene>
         <!--Define Sample-->
         <scene sceneID="tne-QT-ifu">
@@ -112,9 +111,9 @@
                                 <action selector="leftTapped:" destination="BYZ-38-t0r" id="785-Iq-B2n"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" systemItem="action" id="lR6-S0-Wf7">
+                        <barButtonItem key="rightBarButtonItem" systemItem="organize" id="lR6-S0-Wf7">
                             <connections>
-                                <action selector="shareFile:" destination="BYZ-38-t0r" id="rnr-K3-GHt"/>
+                                <action selector="rightTapped:" destination="BYZ-38-t0r" id="piy-ju-9DT"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -132,7 +131,7 @@
                     </connections>
                 </pongPressGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="710" y="62"/>
+            <point key="canvasLocation" x="642" y="62"/>
         </scene>
         <!--Settings-->
         <scene sceneID="taK-2d-NOH">
@@ -255,7 +254,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Idb-nM-1kJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="41" y="738"/>
+            <point key="canvasLocation" x="-724" y="724"/>
         </scene>
         <!--Location Settings-->
         <scene sceneID="RkV-d7-4Wd">
@@ -330,7 +329,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="H81-Pu-1R8" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="710" y="738"/>
+            <point key="canvasLocation" x="-29" y="716"/>
         </scene>
         <!--Saved Fields Table View Controller-->
         <scene sceneID="zMB-Zl-21y">
@@ -340,32 +339,59 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <view key="tableHeaderView" contentMode="scaleToFill" id="rrL-qZ-BIE">
+                            <rect key="frame" x="0.0" y="0.0" width="600" height="47"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <subviews>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="contactAdd" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LzW-WI-MdQ">
+                                    <rect key="frame" x="570" y="22" width="22" height="22"/>
+                                    <state key="normal">
+                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                    </state>
+                                    <connections>
+                                        <action selector="newField:" destination="vb6-rb-RmP" eventType="touchUpInside" id="tgz-xa-cpT"/>
+                                    </connections>
+                                </button>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="242" verticalHuggingPriority="251" text="Saved Fields" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="me3-pn-lMM">
+                                    <rect key="frame" x="382.5" y="20" width="179.5" height="27"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="32"/>
+                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                            </subviews>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <constraints>
+                                <constraint firstItem="me3-pn-lMM" firstAttribute="centerY" secondItem="LzW-WI-MdQ" secondAttribute="centerY" id="EbU-DI-QGZ"/>
+                                <constraint firstAttribute="bottom" secondItem="me3-pn-lMM" secondAttribute="bottom" id="GZ7-RF-2eH"/>
+                                <constraint firstItem="LzW-WI-MdQ" firstAttribute="leading" secondItem="me3-pn-lMM" secondAttribute="trailing" constant="8" symbolic="YES" id="MuX-79-4kP"/>
+                                <constraint firstItem="LzW-WI-MdQ" firstAttribute="trailing" secondItem="rrL-qZ-BIE" secondAttribute="trailingMargin" id="QLx-yz-72B"/>
+                                <constraint firstItem="me3-pn-lMM" firstAttribute="top" secondItem="rrL-qZ-BIE" secondAttribute="top" constant="20" symbolic="YES" id="tye-IL-eqd"/>
+                            </constraints>
+                        </view>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="SavedFieldsTableCell" id="eZS-Q3-upe" customClass="SavedFieldsTableCell" customModule="SoilSampler" customModuleProvider="target">
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="eZS-Q3-upe" id="Daa-vx-TI5">
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fvW-KQ-R4C">
-                                            <rect key="frame" x="8" y="11" width="42" height="21"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Date" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qq6-Ln-seF">
+                                            <rect key="frame" x="550" y="8" width="42" height="27"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qq6-Ln-seF">
-                                            <rect key="frame" x="550" y="11" width="42" height="21"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Field" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fvW-KQ-R4C">
+                                            <rect key="frame" x="500" y="8" width="42" height="27"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstItem="Qq6-Ln-seF" firstAttribute="trailing" secondItem="Daa-vx-TI5" secondAttribute="trailingMargin" id="4hM-k7-STB"/>
-                                        <constraint firstItem="Qq6-Ln-seF" firstAttribute="firstBaseline" secondItem="fvW-KQ-R4C" secondAttribute="firstBaseline" id="MYa-DI-wMa"/>
-                                        <constraint firstItem="fvW-KQ-R4C" firstAttribute="centerY" secondItem="Daa-vx-TI5" secondAttribute="centerY" id="Mrd-yj-VDW"/>
-                                        <constraint firstItem="fvW-KQ-R4C" firstAttribute="top" secondItem="Daa-vx-TI5" secondAttribute="topMargin" constant="3" id="VZX-l1-rt4"/>
-                                        <constraint firstItem="fvW-KQ-R4C" firstAttribute="leading" secondItem="Daa-vx-TI5" secondAttribute="leadingMargin" id="bNh-oL-Xr4"/>
-                                        <constraint firstItem="Qq6-Ln-seF" firstAttribute="baseline" secondItem="fvW-KQ-R4C" secondAttribute="baseline" id="zK7-np-xRA"/>
+                                        <constraint firstItem="Qq6-Ln-seF" firstAttribute="leading" secondItem="fvW-KQ-R4C" secondAttribute="trailing" constant="8" symbolic="YES" id="3ja-8p-HC8"/>
+                                        <constraint firstItem="fvW-KQ-R4C" firstAttribute="centerY" secondItem="Daa-vx-TI5" secondAttribute="centerY" id="Bbb-8h-jcB"/>
+                                        <constraint firstItem="fvW-KQ-R4C" firstAttribute="baseline" secondItem="Qq6-Ln-seF" secondAttribute="baseline" id="lTY-eY-jd6"/>
+                                        <constraint firstItem="Qq6-Ln-seF" firstAttribute="trailing" secondItem="Daa-vx-TI5" secondAttribute="trailingMargin" id="qpU-4c-vMr"/>
                                     </constraints>
                                 </tableViewCellContentView>
                                 <connections>
@@ -379,17 +405,10 @@
                             <outlet property="delegate" destination="vb6-rb-RmP" id="0Ft-VA-Hbn"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" id="0zA-ta-4HM">
-                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="tTv-de-9jp">
-                            <connections>
-                                <action selector="newField:" destination="vb6-rb-RmP" id="xM1-0H-6V8"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2Lx-IS-3XO" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="181" y="1405"/>
+            <point key="canvasLocation" x="-1353" y="62"/>
         </scene>
         <!--Left View Controller-->
         <scene sceneID="Nov-0J-YIF">
@@ -411,7 +430,7 @@
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Soil Sampler Pro" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oqb-O9-zzi">
-                                            <rect key="frame" x="8" y="17" width="584" height="41"/>
+                                            <rect key="frame" x="8" y="20" width="584" height="35"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="32"/>
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
@@ -420,13 +439,13 @@
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     <constraints>
                                         <constraint firstItem="oqb-O9-zzi" firstAttribute="centerY" secondItem="aQ5-U0-O25" secondAttribute="centerY" id="pNA-Q3-W3G"/>
-                                        <constraint firstItem="oqb-O9-zzi" firstAttribute="top" secondItem="aQ5-U0-O25" secondAttribute="top" constant="17" id="rl0-Ts-Rlr"/>
+                                        <constraint firstItem="oqb-O9-zzi" firstAttribute="top" secondItem="aQ5-U0-O25" secondAttribute="top" constant="20" symbolic="YES" id="rl0-Ts-Rlr"/>
                                         <constraint firstItem="oqb-O9-zzi" firstAttribute="leading" secondItem="aQ5-U0-O25" secondAttribute="leadingMargin" id="vp6-n2-ffx"/>
                                         <constraint firstItem="oqb-O9-zzi" firstAttribute="trailing" secondItem="aQ5-U0-O25" secondAttribute="trailingMargin" id="vz9-k9-Yly"/>
                                     </constraints>
                                 </view>
                                 <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="checkmark" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="MenuCell" id="x9G-AF-5TE" customClass="MenuCell" customModule="SoilSampler" customModuleProvider="target">
+                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="MenuCell" id="x9G-AF-5TE" customClass="MenuCell" customModule="SoilSampler" customModuleProvider="target">
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="x9G-AF-5TE" id="r6E-KM-Ou2">
                                             <autoresizingMask key="autoresizingMask"/>
@@ -468,7 +487,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Mmp-75-Zca" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-631" y="62"/>
+            <point key="canvasLocation" x="-724" y="62"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="fEr-dy-gp2">
@@ -501,25 +520,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PAb-cf-h57" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-631" y="738"/>
-        </scene>
-        <!--Navigation Controller-->
-        <scene sceneID="EyI-ki-F5n">
-            <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="bGE-y3-sMM" sceneMemberID="viewController">
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Qua-r2-qwa">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="vb6-rb-RmP" kind="relationship" relationship="rootViewController" id="zlp-SJ-LMG"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Ane-Jg-Xk6" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-631" y="1405"/>
+            <point key="canvasLocation" x="-1353" y="724"/>
         </scene>
     </scenes>
     <resources>

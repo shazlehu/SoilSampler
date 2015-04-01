@@ -26,36 +26,6 @@ import Foundation
 
 class ViewController: CenterViewController, UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate, MKMapViewDelegate, UITextFieldDelegate
 {
-// MARK: Constants
-    private struct Constants {
-        static let DefaultSpan = MKCoordinateSpanMake(0.001, 0.001)
-        static let DefaultFieldTitle = "Tap Here to name field"
-        struct Alerts {
-            static let Title = "Really delete sample points?"
-            static let FieldSample = "Delete field and sample"
-            static let SampleOnly = "Delete sample"
-            static let Cancel = "Cancel"
-            static let DefineField = "Please tap the map to mark field corners."
-            static let DefineFieldAndSample = "Please tap the map to mark field corners, use the +/- buttons to generate samples."
-            static let OK = "Ok"
-        }
-        struct GoToAlert {
-            static let Title = "Go to location:"
-            static let ErrorTitle = "Latitude must be from -90 to 90, Longitude -180 to 180"
-            static let Go = "Go"
-        }
-        
-        static let Title = "Define Sample"
-        static let ClearedTitle = "Samples: 0"
-        static let ShareMessage = "This is a spreadsheet of latitude & longitude coordinates and penetrometer depths."
-        static let ShareTitle = "Share a spreadsheet of your penetrometer readings."
-        
-        struct Table {
-            static let AnimationDuration :NSTimeInterval = 0.5
-            static let HeightMultiplier :CGFloat = 0.4
-            static let MapHeightMultiplier :CGFloat = 0.7
-        }
-    }
 // MARK: Properties
     
     let _fieldManager = FieldManager()
@@ -63,19 +33,20 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     // Editable field name title
     var _textField : UITextField! {
         didSet {
-            _textField.text = Constants.DefaultFieldTitle
+            _textField.textColor = UIColor.redColor()
+            _textField.text = _fieldManager._currentField.name
             _textField.textAlignment = NSTextAlignment.Center
             _textField.clearButtonMode = UITextFieldViewMode.WhileEditing
-            _textField.textColor = UIColor.redColor()
-            self.navigationItem.titleView = _textField
-            
             _textField.delegate = self
+            
+            self.navigationItem.titleView = _textField
         }
     }
     
     func textFieldShouldReturn(textField: UITextField) -> Bool {
         _fieldManager.setFieldName(textField.text)
         textField.resignFirstResponder()
+        _textField.textColor = UIColor.blackColor()
         return true
     }
     
@@ -83,6 +54,8 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     {
         _fieldManager.newField()
         self.doClear(nil)
+        _textField.text = Constants.DefaultFieldTitle
+        _textField.textColor = UIColor.redColor()
     }
 
     func deleteField(index: Int)
@@ -111,6 +84,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     // Editable title field
     
 
+    // MARK: viewDidLoad
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -123,13 +97,35 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         _locationManager = LocationManager(fieldManager: self._fieldManager, aMap: self._map, aView: self)
         
         _textField = UITextField(frame: CGRectMake(0, 0, 200, 22))
-        
+        addAnnotationsForCurrentField()
     }
 
+    func addAnnotationsForCurrentField()
+    {
+        // place any annotations saved in the current field
+        for (var i = 0; i < _fieldManager._currentField.corners.count; i++) {
+            addFieldCorner(_fieldManager._currentField.corners[i], fieldIndex: i)
+        }
+        
+        for var i = 0; i < _fieldManager._currentField.samples.count; i++ {
+            
+            var annotation = CustomAnnotation(index: i)
+            
+            annotation.setCoordinate(_fieldManager._currentField.samples[i].point)
+            annotation.isCorner = false
+            
+            _map.addAnnotation(annotation)
+            sampleAnnotations.append(annotation)
+        }
+
+    }
     func setCurrentField(index: Int)
     {
         _fieldManager._currentField = _fieldManager.savedFields[index]
-        
+        _map.removeAnnotations(sampleAnnotations)
+        _map.removeAnnotations(fieldAnnotations)
+        addAnnotationsForCurrentField()
+        _textField.text = _fieldManager._currentField.name
     }
     // MARK: IBActions
     
@@ -189,7 +185,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     
     @IBAction func shareFile(sender: AnyObject) {
         
-        let objectsToShare = [Constants.ShareMessage, _fieldManager.writeFile()]
+        let objectsToShare = [Constants.ShareMessage, _fieldManager.saveCurrentField()]
         let activityVC = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
 
         // New Excluded Activities Code
@@ -283,8 +279,8 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
                 _map.addAnnotation(annotation)
                 sampleAnnotations.append(annotation)
             }
-
-            self.navigationItem.title = "Samples: \(points.count)"
+// This no longer works
+//            self.navigationItem.title = "Samples: \(points.count)"
         }
         else {
             let fieldAlert = UIAlertController(title: Constants.Alerts.DefineField, message: nil, preferredStyle: UIAlertControllerStyle.Alert)
@@ -501,22 +497,29 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
 
     // MARK: MapView Delegate Functions
   
-    
-    @IBAction func addFieldCorner(sender: UILongPressGestureRecognizer) {
+    func addFieldCorner(coord: CLLocationCoordinate2D, fieldIndex: Int)
+    {
+        var annotation = CustomAnnotation(index: fieldIndex)
         
+        annotation.isCorner = true
+        annotation.setCoordinate(coord)
+        
+        _map.addAnnotation(annotation)
+        fieldAnnotations.append(annotation)
+ 
+    }
+    
+    @IBAction func addFieldCorner(sender: UILongPressGestureRecognizer)
+    {
         if takingSamples { return }
         
         if sender.state == UIGestureRecognizerState.Began {
-            let mapPoint : CLLocationCoordinate2D = _map.convertPoint(sender.locationInView(_map), toCoordinateFromView: _map)
-            
-            var annotation = CustomAnnotation(index: _fieldManager.addFieldPoint(mapPoint))
-            
-            annotation.isCorner = true
-            annotation.setCoordinate(mapPoint)
-            
-            _map.addAnnotation(annotation)
-            fieldAnnotations.append(annotation)
-            
+            let coord : CLLocationCoordinate2D = _map.convertPoint(sender.locationInView(_map), toCoordinateFromView: _map)
+            let index = _fieldManager.addFieldPoint(coord)
+            addFieldCorner(coord, fieldIndex: index)
+            if index >= 2 { // index >= 2 means we have three points
+                getSamplingPoints(self)
+            }
         }
     }
     
@@ -609,6 +612,38 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    // MARK: Constants
+    private struct Constants {
+        static let DefaultSpan = MKCoordinateSpanMake(0.001, 0.001)
+        static let DefaultFieldTitle = "Tap Here to name field"
+        struct Alerts {
+            static let Title = "Really delete sample points?"
+            static let FieldSample = "Delete field and sample"
+            static let SampleOnly = "Delete sample"
+            static let Cancel = "Cancel"
+            static let DefineField = "Please tap the map to mark field corners."
+            static let DefineFieldAndSample = "Please tap the map to mark field corners, use the +/- buttons to generate samples."
+            static let OK = "Ok"
+        }
+        struct GoToAlert {
+            static let Title = "Go to location:"
+            static let ErrorTitle = "Latitude must be from -90 to 90, Longitude -180 to 180"
+            static let Go = "Go"
+        }
+        
+        static let Title = "Define Sample"
+        static let ClearedTitle = "Samples: 0"
+        static let ShareMessage = "This is a spreadsheet of latitude & longitude coordinates and penetrometer depths."
+        static let ShareTitle = "Share a spreadsheet of your penetrometer readings."
+        
+        struct Table {
+            static let AnimationDuration :NSTimeInterval = 0.5
+            static let HeightMultiplier :CGFloat = 0.4
+            static let MapHeightMultiplier :CGFloat = 0.7
+        }
+    }
+
     
 }
 

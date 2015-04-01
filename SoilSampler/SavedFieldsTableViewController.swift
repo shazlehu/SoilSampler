@@ -20,10 +20,9 @@ class SavedFieldsTableViewController: UITableViewController, UIAlertViewDelegate
     var delegate: SidePanelViewControllerDelegate?
     
     @IBAction func newField(sender: AnyObject) {
-        self.dismissViewControllerAnimated(true, completion: nil)
-//        delegate?.itemSelected(mapViewController)
+        delegate?.itemSelected(mapViewController)
         mapViewController.newField()
-        
+        tableView.reloadData()
     }
     
     override func viewDidLoad() {

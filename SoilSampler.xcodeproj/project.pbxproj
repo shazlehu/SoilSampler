@@ -109,12 +109,9 @@
 			children = (
 				228B53D41AC2401E009A1F78 /* Main.storyboard */,
 				228B53D71AC2402D009A1F78 /* ViewController.swift */,
+				228B53F01AC241E4009A1F78 /* AppDelegate.swift */,
 				228B53DB1AC2406A009A1F78 /* FieldManager.swift */,
-				228B53B71AC23F98009A1F78 /* LaunchScreen.xib */,
-				228B53EE1AC240AE009A1F78 /* CustomAnnotation.swift */,
-				228B53DA1AC2406A009A1F78 /* CustomTableCell.swift */,
-				223AA9441AC8D2FE000F9DC2 /* SoilSampler.xcdatamodel */,
-				228B53DC1AC2406A009A1F78 /* LocationManager.swift */,
+				228B53F21AC242F6009A1F78 /* Side Menu */,
 				228B53AC1AC23F98009A1F78 /* Supporting Files */,
 			);
 			path = SoilSampler;
@@ -123,8 +120,11 @@
 		228B53AC1AC23F98009A1F78 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				228B53F01AC241E4009A1F78 /* AppDelegate.swift */,
-				228B53F21AC242F6009A1F78 /* Side Menu */,
+				228B53EE1AC240AE009A1F78 /* CustomAnnotation.swift */,
+				228B53DA1AC2406A009A1F78 /* CustomTableCell.swift */,
+				223AA9441AC8D2FE000F9DC2 /* SoilSampler.xcdatamodel */,
+				228B53DC1AC2406A009A1F78 /* LocationManager.swift */,
+				228B53B71AC23F98009A1F78 /* LaunchScreen.xib */,
 				228B53F31AC24310009A1F78 /* Heat Map */,
 				228B53DD1AC2406A009A1F78 /* LaunchScreen.xib */,
 				228B53DE1AC2406A009A1F78 /* Images.xcassets */,

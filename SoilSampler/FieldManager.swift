@@ -63,25 +63,24 @@ extension CLLocationCoordinate2D : Printable {
     }
 }
 
-struct Field {
-    var name: String = "Unnamed"
+class Field {
+    var name: String!
     var samples = [Sample]()
     var corners = [CLLocationCoordinate2D]()
+    var date = NSDate()
+    init(named: String) { name = named }
 }
 
 class FieldManager {
     
     var savedFields = [Field]()
 
-    // current field properties
-//    var field = [CLLocationCoordinate2D]()
-    var _currentField = Field()
-//    private var samplePoints = [Sample]()
+    var _currentField: Field!
+
     var count : Int { get { return _currentField.samples.count } }
     
     var annotations = [AnyObject]()
     var sampleDensity: Int = 10
-    var fileName = "log.csv"
     
     subscript(index: Int) -> Sample {
         get {
@@ -92,11 +91,25 @@ class FieldManager {
         }
     }
     
+    init()
+    {
+        loadFieldsFromFile()
+        if savedFields.count > 0 {
+            _currentField = savedFields[0]
+        }
+        else {
+            
+            savedFields.append(Field(named: "Untitled"))
+            _currentField = savedFields.last
+        }
+    }
+    
+    
     func newField()
     {
-        writeFile()
-        _currentField = Field()
-        savedFields.append(_currentField)
+        saveCurrentField()
+        savedFields.append(Field(named: "Untitled"))
+        _currentField = savedFields.last
     }
     
     func setFieldName(name: String)
@@ -140,8 +153,6 @@ class FieldManager {
         return depths
     }
     
-    private var fileurl : NSURL! = nil
-    
     
     // File is CSV of the format PointType = {Corner, Sample}, Latitude, Longitude, depth
     
@@ -160,24 +171,30 @@ class FieldManager {
         }
     }
     
-    func loadFieldsFromFile(named: String)
+    func loadFieldsFromFile()
     {
-        let dir : NSURL = NSFileManager.defaultManager().URLsForDirectory(NSSearchPathDirectory.DocumentDirectory, inDomains: NSSearchPathDomainMask.UserDomainMask).last as NSURL
+        let fileManager = NSFileManager.defaultManager()
+        let dir : NSURL = fileManager.URLsForDirectory(NSSearchPathDirectory.DocumentDirectory, inDomains: NSSearchPathDomainMask.UserDomainMask).last as NSURL
+        
         var err:NSError?
-        if let files = NSFileManager.defaultManager().contentsOfDirectoryAtURL(dir, includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions.SkipsHiddenFiles, error: &err) as? [NSURL] {
+        let dateFormatter = NSDateFormatter()
+        if let files =  fileManager.contentsOfDirectoryAtURL(dir, includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions.SkipsHiddenFiles, error: &err) as? [NSURL] {
 
             for (var i = 0; i < files.count; i++) {
-                
-                var fieldName = files[i].lastPathComponent?.stringByDeletingPathExtension
-                fileurl =  dir.URLByAppendingPathComponent(named + ".csv")
-                if let fileHandle = NSFileHandle(forWritingToURL: fileurl, error: &err) {
+                if let fileHandle = NSFileHandle(forReadingFromURL: files[i], error: &err) {
                     let data = NSString(data: fileHandle.readDataToEndOfFile(), encoding: NSUTF8StringEncoding) as String
-                    
                     // read line by line
-                    savedFields[i] = Field()
-                    let lines = data.componentsSeparatedByString("\n")
+                    let name = files[i].lastPathComponent?.stringByDeletingPathExtension
+                    savedFields.append(Field(named: name!))
                     
+                    // tokenize by newline "\n"
+                    let lines = data.componentsSeparatedByString("\n")
+
                     // first line is date
+                    if let date = dateFormatter.dateFromString(lines[0]) {
+                        savedFields[i].date = date
+                    }
+                    
                     for (var j = 1; j < lines.count; j++) {
                         let sampleVals = lines[j].componentsSeparatedByString(",")
                         
@@ -193,8 +210,8 @@ class FieldManager {
                                     point : CLLocationCoordinate2D(
                                         latitude: (sampleVals[1] as NSString).doubleValue,
                                         longitude: (sampleVals[2] as NSString).doubleValue),
-                                    depth: 0.0 as Double))
-                                                default:
+                                    depth: (sampleVals[2] as NSString).doubleValue))
+                        default:
                             NSLog("Unknown type in saved field file!")
                         }
                     }
@@ -209,48 +226,49 @@ class FieldManager {
         }
     }
     
-    func writeFile() -> NSURL
+    func saveAllFields()
     {
-        
+        for field in savedFields {
+            saveField(field)
+        }
+    }
+    
+    func saveField(field: Field) -> NSURL
+    {
         let dir : NSURL = NSFileManager.defaultManager().URLsForDirectory(NSSearchPathDirectory.DocumentDirectory, inDomains: NSSearchPathDomainMask.UserDomainMask).last as NSURL
         var err:NSError?
         let files = NSFileManager.defaultManager().contentsOfDirectoryAtURL(dir, includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions.SkipsHiddenFiles, error: &err) as? [NSURL]
         
-        fileurl =  dir.URLByAppendingPathComponent("\(_currentField.name).csv")
+        let fileURL =  dir.URLByAppendingPathComponent("\(field.name).csv")
         
         var string : String = "\(NSDate())\n"
-      
-        for c in _currentField.corners {
+        
+        for c in field.corners {
             string += "\(c.description)\n"
         }
-        for s in _currentField.samples {
+        for s in field.samples {
             string += "\(s.description)\n"
         }
         
         let data = string.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)!
         
-        if NSFileManager.defaultManager().fileExistsAtPath(fileurl.path!) {
-            var err:NSError?
-            if let fileHandle = NSFileHandle(forWritingToURL: fileurl, error: &err) {
-//                fileHandle.seekToEndOfFile()
-                fileHandle.writeData(data)
-                fileHandle.closeFile()
-            }
-            else {
-                NSLog("Can't open fileHandle \(err)")
-            }
-        }			
-        else {
-            var err:NSError?
-            if !data.writeToURL(fileurl, options: .DataWritingAtomic, error: &err) {
-                NSLog("Can't write \(err)")
-            }
+        let fileManager = NSFileManager.defaultManager()
+        if fileManager.fileExistsAtPath(fileURL.path!) {
+            // delete old file
+            fileManager.removeItemAtURL(fileURL, error: &err)
         }
-        return fileurl
+        if !data.writeToURL(fileURL, options: .DataWritingAtomic, error: &err) {
+            NSLog("Can't write \(err)")
+        }
+        return fileURL
     }
     
+    func saveCurrentField() -> NSURL
+    {
+        return saveField(_currentField)
+    }
     
-    
+
     /*
     
         algorithm works by generating a point in the bounding rectangle, then checking if it's in the polygon.
