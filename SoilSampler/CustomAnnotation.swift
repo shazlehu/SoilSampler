@@ -18,7 +18,7 @@ class CustomAnnotation: NSObject, MKAnnotation {
     var fieldIndex: Int
     var isSelected: Bool = false
     var isCorner: Bool = false
-    var isDraggable: Bool = true
+    var isEditable: Bool = true
     
     var coordinate = CLLocationCoordinate2D(latitude: 0,longitude: 0)
     
@@ -38,7 +38,7 @@ class CustomAnnotationView: MKAnnotationView {
     {
         super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
         self.image = UIImage(named: "draggable_icon")
-        self.draggable = (annotation as CustomAnnotation).isDraggable
+        self.draggable = (annotation as CustomAnnotation).isEditable
     }
     
     required init(coder aDecoder: NSCoder) {
@@ -49,6 +49,7 @@ class CustomAnnotationView: MKAnnotationView {
     }
     
     override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+        self.draggable = (self.annotation as CustomAnnotation).isEditable
         self.setSelected(true, animated: true)
         super.touchesBegan(touches, withEvent: event)
     }

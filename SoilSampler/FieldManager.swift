@@ -418,6 +418,7 @@ class FieldManager {
     }
 
 
+    var sortedCorners: [CLLocationCoordinate2D] = [CLLocationCoordinate2D]()
     func generateTestPoints(isRandom : Bool) -> [Sample]?
     {
         // check is we have a polygon
@@ -436,13 +437,48 @@ class FieldManager {
             if p.longitude < min.longitude { min.longitude = p.longitude }
         }
         
+        // sort points around center point
+        
+        let center = CLLocationCoordinate2D(latitude: (max.latitude + min.latitude) / 2, longitude: (max.longitude + min.longitude) / 2)
+        sortedCorners = _currentField.corners.sorted {
+            (a, b) in
+            if (a.latitude - center.latitude >= 0 && b.latitude - center.latitude < 0) {
+                return true
+            }
+            if (a.latitude - center.latitude < 0 && b.latitude - center.latitude >= 0) {
+                return false
+            }
+            if (a.latitude - center.latitude == 0 && b.latitude - center.latitude == 0) {
+                if (a.longitude - center.longitude >= 0 || b.longitude - center.longitude >= 0) {
+                    return a.longitude > b.longitude
+                }
+                return b.longitude > a.longitude;
+            }
+            
+            // compute the cross product of vectors (center -> a) x (center -> b)
+            let det = (a.latitude - center.latitude) * (b.longitude - center.longitude) - (b.latitude - center.latitude) * (a.longitude - center.longitude)
+            if (det < 0) {
+                return true
+            }
+            if (det > 0) {
+                return false
+            }
+            
+            // points a and b are on the same line from the center
+            // check which point is closer to the center
+            let d1 = (a.latitude - center.latitude) * (a.latitude - center.latitude) + (a.longitude - center.longitude) * (a.longitude - center.longitude)
+            let d2 = (b.latitude - center.latitude) * (b.latitude - center.latitude) + (b.longitude - center.longitude) * (b.longitude - center.longitude)
+            return d1 > d2
+        }
+        
+        
         // algorithm from http://www.codeproject.com/Tips/84226/Is-a-Point-inside-a-Polygon
         
         func pointInPolygon(point: CLLocationCoordinate2D, polygon poly: [CLLocationCoordinate2D]) -> Bool
         {
             var c : Bool = false
             
-            for var i = 0, j = poly.count - 1; i < _currentField.corners.count; j = i++ {
+            for var i = 0, j = poly.count - 1; i < poly.count; j = i++ {
                 if (((poly[i].longitude > point.longitude) !=
                     (poly[j].longitude > point.longitude)) &&
                     (point.latitude < (poly[j].latitude - poly[i].latitude) *
@@ -486,7 +522,7 @@ class FieldManager {
                 p.longitude += longFunc(p.latitude)
                 p.latitude += latFunc(p.longitude)
                 
-                if pointInPolygon(p, polygon: _currentField.corners) {
+                if pointInPolygon(p, polygon: sortedCorners) {
                     _currentField.samples.append(Sample(point: p, depth: 0))
                     rowLength++
                }

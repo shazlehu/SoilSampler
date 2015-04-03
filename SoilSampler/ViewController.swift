@@ -33,11 +33,13 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     // Editable field name title
     var _textField : UITextField! {
         didSet {
-            _textField.textColor = UIColor.redColor()
+
             if _fieldManager._currentField.name != FieldConstants.DefaultName {
                 _textField.text = _fieldManager._currentField.name
+                _textField.textColor = UIColor.blackColor()
             } else {
                 _textField.text = Constants.DefaultFieldTitle
+                _textField.textColor = UIColor.redColor()
             }
             _textField.textAlignment = NSTextAlignment.Center
             _textField.clearButtonMode = UITextFieldViewMode.WhileEditing
@@ -87,11 +89,42 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
             _map.setRegion(region, animated: false)
         }
     }
-
     var _locationManager: LocationManager!
-
-    @IBOutlet weak var _randomOrGrid: UISegmentedControl!
     
+    @IBOutlet weak var _layoutButton: UIBarButtonItem! {
+        didSet {
+            _layoutButton.possibleTitles = NSSet(array: ["Grid", "Random"])
+        }
+    }
+    @IBAction func changeSampleLayout(sender: UIBarButtonItem)
+    {
+        switch (_layOut) {
+        case .Random:
+            _layOut = .Grid
+        case .Grid:
+            _layOut = .Random
+        }
+        sender.title = _layOut.description
+    }
+
+
+    enum Layout : Printable {
+        case Grid
+        case Random
+        var description :String {
+            switch self {
+            case Grid: return "Grid"
+            case Random: return "Random"
+            }
+        }
+    }
+    
+    var _layOut : Layout  = .Grid {
+        didSet {
+            self.doClearSample(nil)
+            getSamplingPoints(self)
+        }
+    }
     var sampleAnnotations = [AnyObject]()
     var fieldAnnotations = [AnyObject]()
     
@@ -111,7 +144,9 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         if view.needsUpdateConstraints() { view.updateConstraints() }
         _locationManager = LocationManager(fieldManager: self._fieldManager, aMap: self._map, aView: self)
         
+
         _textField = UITextField(frame: CGRectMake(0, 0, 200, 22))
+        isEditable = _fieldManager._currentField.isEditable
         addAnnotationsForCurrentField()
     }
 
@@ -120,7 +155,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         // place any annotations saved in the current field
         for (index, corner) in enumerate(_fieldManager._currentField.corners) {
             let newCorner = addFieldCorner(corner, fieldIndex: index)
-            newCorner.isDraggable = _fieldManager._currentField.isEditable
+            newCorner.isEditable = isEditable
         }
         
         for (index, sample) in enumerate(_fieldManager._currentField.samples) {
@@ -133,8 +168,9 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
             _map.addAnnotation(annotation)
             sampleAnnotations.append(annotation)
         }
-
+        animatesCornerAddition = false
     }
+    
     func setCurrentField(index: Int)
     {
         hideSampleTable()
@@ -145,14 +181,21 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         sampleAnnotations.removeAll(keepCapacity: true)
         fieldAnnotations.removeAll(keepCapacity: true)
         
-        if _fieldManager._currentField.isEditable { toolBar.activate() }
-        else { toolBar.deActivate() }
+        if isEditable {
+            toolBar.activate()
+            sampleNumberStepper.tintColor = self.view.tintColor
+        }
+        else {
+            toolBar.deActivate()
+             sampleNumberStepper.tintColor = UIColor(red: 0.7, green: 0.7, blue: 0.7, alpha: 1)
+        }
         
         addAnnotationsForCurrentField()
         
         _textField.text = _fieldManager._currentField.name
         _textField.textColor = UIColor.blackColor()
     }
+    
     // MARK: IBActions
     
     @IBAction func clear(sender: AnyObject) {
@@ -199,6 +242,8 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     }
 
 
+    @IBOutlet weak var sampleNumberStepper: UIStepper!
+    
     @IBAction func changeSampleNumber(sender: UIStepper) {
         _fieldManager.sampleDensity = Int(sender.value)
         self.doClearSample(nil)
@@ -224,7 +269,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
 
     @IBAction func goToUserLocation(sender: AnyObject) {
         let region = MKCoordinateRegion(center: _map.userLocation.coordinate, span: Constants.DefaultSpan)
-        _map.setRegion(region, animated: true)
+        _map.setRegion(region, animated: false)
     }
     
     func goToLocation(location: CLLocationCoordinate2D)
@@ -290,7 +335,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     @IBAction func getSamplingPoints(sender: AnyObject) {
         doClearSample(nil)
         
-        if let samples = _fieldManager.generateTestPoints(_randomOrGrid.selectedSegmentIndex == 1) {
+        if let samples = _fieldManager.generateTestPoints(_layOut == .Random) {
         
             for (i, sample) in enumerate(samples) {
             
@@ -302,8 +347,6 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
                 _map.addAnnotation(annotation)
                 sampleAnnotations.append(annotation)
             }
-// This no longer works
-//            self.navigationItem.title = "Samples: \(points.count)"
         }
         else {
             let fieldAlert = UIAlertController(title: Constants.Alerts.DefineField, message: nil, preferredStyle: UIAlertControllerStyle.Alert)
@@ -317,6 +360,32 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     
     // MARK: Sample Table Functions
     
+    // this code is totally bunk.
+    var isEditable : Bool {
+        get {
+            return _fieldManager._currentField.isEditable
+        }
+        set {
+            _fieldManager._currentField.isEditable = newValue
+            
+            for a in self.fieldAnnotations  {
+                if let cust = a  as? CustomAnnotation {
+                    cust.isEditable = self.isEditable
+                }
+            }
+            
+            if (isEditable) {
+                self.toolBar.activate()
+                 sampleNumberStepper.tintColor = self.view.tintColor
+            }
+            else {
+                self.toolBar.deActivate()
+                 sampleNumberStepper.tintColor = UIColor(red: 0.7, green: 0.7, blue: 0.7, alpha: 1)
+            }
+
+        }
+    }
+
     func showSampleTable() {
         if _fieldManager.count == 0 {
             let fieldAlert = UIAlertController(title: Constants.Alerts.DefineFieldAndSample, message: nil, preferredStyle: UIAlertControllerStyle.Alert)
@@ -329,8 +398,8 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         else if tableView == nil {
             let mapFrame = self._map.frame
 
-            self.toolBar.deActivate()
-            _fieldManager._currentField.isEditable = false
+            self.isEditable = false
+            
             UIView.animateWithDuration(Constants.Table.AnimationDuration) {
                 self.tableView = UITableView(frame: CGRect(x: self._map.frame.origin.x, y: self._map.frame.height, width: self._map.frame.width, height: mapFrame.height * Constants.Table.HeightMultiplier))
                 
@@ -359,7 +428,6 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
                 
                 if self.view.needsUpdateConstraints() { self.view.updateConstraints() }
                 self.tableView = nil
-                if self._fieldManager._currentField.isEditable { self.toolBar.activate() }
             }
         }
         
@@ -509,15 +577,15 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         
         annotation.isCorner = true
         annotation.setCoordinate(coord)
-        
         _map.addAnnotation(annotation)
         fieldAnnotations.append(annotation)
+        
         return annotation
     }
     
     @IBAction func addFieldCorner(sender: UILongPressGestureRecognizer)
     {
-        if !_fieldManager._currentField.isEditable { return }
+        if !isEditable { return }
         
         if sender.state == UIGestureRecognizerState.Began {
             let coord : CLLocationCoordinate2D = _map.convertPoint(sender.locationInView(_map), toCoordinateFromView: _map)
@@ -529,7 +597,21 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         }
     }
     
+    var animatesCornerAddition : Bool = false
+    @IBAction func addCorner(sender: AnyObject)
+    {
+        if !isEditable { return }
+        
+        let coord : CLLocationCoordinate2D = _map.centerCoordinate
+        let index = _fieldManager.addFieldPoint(coord)
+        addFieldCorner(coord, fieldIndex: index)
+        if index >= 2 { // index >= 2 means we have three points
+            getSamplingPoints(self)
+        }
+        animatesCornerAddition = true
+    }
 
+    
     func mapView(mapView: MKMapView!, didDeselectAnnotationView view: MKAnnotationView!) {
         view.setSelected(true, animated: false)
     }
@@ -538,6 +620,48 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         return HeatMapView(overlay: overlay)
     }
 
+    func mapView(mapView: MKMapView!, didAddAnnotationViews views: [AnyObject]!) {
+        if !animatesCornerAddition { return }
+        var i = -1;
+        for view in views {
+            i++;
+            let mkView = view as MKAnnotationView
+            if view.annotation is MKUserLocation {
+                continue;
+            }
+            
+            if let customAnnotation = view as? CustomAnnotationView {
+            // Check if current annotation is inside visible map rect, else go to next one
+                let point:MKMapPoint  =  MKMapPointForCoordinate(mkView.annotation.coordinate);
+                if (!MKMapRectContainsPoint(self._map.visibleMapRect, point)) {
+                    continue;
+                }
+                
+                let endFrame:CGRect = mkView.frame;
+                
+                // Move annotation out of view
+                mkView.frame = CGRectMake(mkView.frame.origin.x, mkView.frame.origin.y - self.view.frame.size.height, mkView.frame.size.width, mkView.frame.size.height);
+                
+                // Animate drop
+                let delay = 0.03 * Double(i)
+                UIView.animateWithDuration(0.5, delay: delay, options: UIViewAnimationOptions.CurveEaseIn, animations:{() in
+                    mkView.frame = endFrame
+                    // Animate squash
+                    }, completion:{(Bool) in
+                        UIView.animateWithDuration(0.05, delay: 0.0, options: UIViewAnimationOptions.CurveEaseInOut, animations:{() in
+                            mkView.transform = CGAffineTransformMakeScale(1.0, 0.6)
+                            
+                            }, completion: {(Bool) in
+                                UIView.animateWithDuration(0.3, delay: 0.0, options: UIViewAnimationOptions.CurveEaseInOut, animations:{() in
+                                    mkView.transform = CGAffineTransformIdentity
+                                    }, completion: nil)
+                        })
+                        
+                })
+            }
+        }
+    }
+    
     func mapView(mapView: MKMapView!,
         viewForAnnotation annotation: MKAnnotation!) -> MKAnnotationView!
     {
@@ -554,6 +678,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
                     return annotationView
                 }
                 pinView?.annotation = a
+                pinView?.draggable = isEditable
                 return pinView
             }
 
@@ -591,7 +716,6 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
             }
             view.image = UIImage(named: "draggable_icon")
         }
-        
     }
     
     private var hasSetUserLocation = false
@@ -601,18 +725,17 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         if (!hasSetUserLocation) { goToUserLocation(self) }
         hasSetUserLocation = true
     }
-/*
-    func mapView(mapView: MKMapView!, rendererForOverlay overlay: MKOverlay!) -> MKOverlayRenderer!
-    {
-        if overlay is MKPolyline {
-            var polylineRenderer = MKPolylineRenderer(overlay: overlay)
-            polylineRenderer.strokeColor = UIColor.blueColor()
-            polylineRenderer.lineWidth = 4
-            return polylineRenderer
-        }
-        return nil
-    }
-*/
+//
+//    func mapView(mapView: MKMapView!, rendererForOverlay overlay: MKOverlay!) -> MKOverlayRenderer!
+//    {
+//        if overlay is MKPolyline {
+//            var polylineRenderer = MKPolylineRenderer(overlay: overlay)
+//            polylineRenderer.strokeColor = UIColor.blueColor()
+//            polylineRenderer.lineWidth = 4
+//            return polylineRenderer
+//        }
+//    }
+
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -656,7 +779,6 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
 }
 
 extension UIToolbar {
-    
     func activate() {
         for button in self.items as [UIBarButtonItem] {
             button.enabled = true
@@ -667,6 +789,7 @@ extension UIToolbar {
         for button in self.items as [UIBarButtonItem] {
             button.enabled = false
         }
+        (self.items?.last as UIBarButtonItem).enabled = true
     }
 }
 
