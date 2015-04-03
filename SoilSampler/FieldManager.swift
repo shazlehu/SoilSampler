@@ -99,7 +99,20 @@ class FieldManager {
     
     var savedFields = [Field]()
 
-    var _currentFieldIndex = 0
+    private var _currentFieldIndex :Int = 0
+    var currentFieldIndex : Int {
+        get {
+            return _currentFieldIndex
+        }
+        set {
+            if newValue > savedFields.endIndex {
+                _currentFieldIndex = savedFields.endIndex - 1
+            }
+            if newValue < 0 {
+                _currentFieldIndex = 0
+            }
+        }
+    }
     var _currentField: Field {
         get {
             if _currentFieldIndex > savedFields.count {
@@ -151,7 +164,7 @@ class FieldManager {
         }
         
         savedFields.append(Field(named: newName))
-        _currentFieldIndex = savedFields.endIndex - 1
+        currentFieldIndex = savedFields.endIndex - 1
     }
     
     func deleteField(index: Int)
@@ -175,8 +188,8 @@ class FieldManager {
         // delete in array
         savedFields.removeAtIndex(index)
         
-        if _currentFieldIndex >= index {
-            _currentFieldIndex--
+        if currentFieldIndex >= index {
+            currentFieldIndex--
         }
 
     }
@@ -302,11 +315,13 @@ class FieldManager {
         }
     }
     
-    func saveAllFields()
+    func saveAllFields() -> [NSURL]
     {
+        var returnURLS = [NSURL]()
         for field in savedFields {
-            saveField(field)
+            returnURLS.append(saveField(field)!)
         }
+        return returnURLS
     }
     
     func saveField(field: Field) -> NSURL?

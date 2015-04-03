@@ -48,6 +48,7 @@ class SidePanelViewController: UIViewController, UITableViewDataSource, UITableV
     var settingsController: SettingsViewController! {
         didSet {
             addMenuItem("Settings", vc: settingsController, action: {}, toggles: false)
+            settingsController.mapViewController = mapViewController
         }
     }
 
@@ -105,9 +106,14 @@ class SidePanelViewController: UIViewController, UITableViewDataSource, UITableV
 //            cell.toggleImageView.image = UIImage(named: "draggable_icon")
 //            //            cell.accessoryView?.setNeedsDisplay()
         }
+//        cell.imageNameLabel.sizeToFit()
+
+//        tableWidth = max(cell.imageNameLabel.frame.maxX, tableWidth)
+//        println("size: \(tableWidth)")
         return cell
     }
     
+  //  var tableWidth: CGFloat = 0.0
 
     func tableView(tableView: UITableView!, didSelectRowAtIndexPath indexPath: NSIndexPath!) {
         let cell = tableView.dequeueReusableCellWithIdentifier(TableView.CellIdentifiers.MenuCell, forIndexPath: indexPath) as MenuCell
@@ -125,10 +131,8 @@ class SidePanelViewController: UIViewController, UITableViewDataSource, UITableV
 
 class MenuCell: UITableViewCell {
     @IBOutlet weak var imageNameLabel: UILabel!
-    @IBOutlet weak var toggleImageView: UIImageView!
     
-   
-        private var _menuItem: MenuItem!
+    private var _menuItem: MenuItem!
     func configureFor(menuItem: MenuItem) {
         imageNameLabel.text = menuItem._title
         _menuItem = menuItem

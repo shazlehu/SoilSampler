@@ -29,8 +29,16 @@ class ContainerViewController: UIViewController, CenterViewControllerDelegate, S
     var leftViewController: SidePanelViewController?
     var rightViewController: SavedFieldsTableViewController?
     
-    let centerPanelExpandedOffset: CGFloat = 100 //60
-    
+    var centerPanelExpandedOffset: CGFloat {// = 400 //60
+        get {
+            if UIDevice.currentDevice().userInterfaceIdiom == .Phone {
+                return 100
+            }
+            else {
+                return 400
+            }
+        }
+    }
     override func shouldAutorotate() -> Bool {
         return true
     }
@@ -50,7 +58,7 @@ class ContainerViewController: UIViewController, CenterViewControllerDelegate, S
         centerNavigationController.didMoveToParentViewController(self)
         
         let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: "handlePanGesture:")
-       // centerNavigationController.view.addGestureRecognizer(panGestureRecognizer)
+        centerNavigationController.view.addGestureRecognizer(panGestureRecognizer)
     }
     
     // MARK: CenterViewController delegate methods
@@ -182,7 +190,7 @@ class ContainerViewController: UIViewController, CenterViewControllerDelegate, S
                 if (gestureIsDraggingFromLeftToRight) {
                     addLeftPanelViewController()
                 } else {
-                    //addRightPanelViewController()
+                    addRightPanelViewController()
                 }
                 
                 showShadowForCenterViewController(true)

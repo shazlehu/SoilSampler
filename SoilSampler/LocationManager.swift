@@ -23,7 +23,6 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
         }
         static let AccuracyThreshold = 10.0
     }
-    
     let _locationManager = CLLocationManager()
     var _fieldManager : FieldManager!
     var _map: MKMapView!
@@ -100,6 +99,16 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
                     style: .Cancel, handler: nil))
         case .NotDetermined: fallthrough
         default: break
+        }
+    }
+    
+    func setAccuracy(high: Bool)
+    {
+        if high {
+            _locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
+        }
+        else {
+            _locationManager.desiredAccuracy = kCLLocationAccuracyBest
         }
     }
 }

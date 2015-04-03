@@ -10,4 +10,9 @@ import UIKit
 
 class SettingsViewController: UITableViewController {
 
+    var mapViewController: ViewController!
+    
+    @IBAction func setAccuracy(sender: UISegmentedControl) {
+        mapViewController._locationManager.setAccuracy(sender.selectedSegmentIndex == 1)
+    }
 }

@@ -62,6 +62,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         self.doClear(nil)
         _textField.text = Constants.DefaultFieldTitle
         _textField.textColor = UIColor.redColor()
+        isEditable = true
     }
 
     func deleteField(index: Int) -> Bool
@@ -75,7 +76,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         }
         else {
             _fieldManager.deleteField(index)
-            setCurrentField(_fieldManager._currentFieldIndex)
+            setCurrentField(_fieldManager.currentFieldIndex)
             return true
         }
     }
@@ -175,7 +176,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     {
         hideSampleTable()
         heatMapOn = false
-        _fieldManager._currentFieldIndex = index
+        _fieldManager.currentFieldIndex = index
         _map.removeAnnotations(sampleAnnotations)
         _map.removeAnnotations(fieldAnnotations)
         sampleAnnotations.removeAll(keepCapacity: true)
@@ -253,18 +254,27 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     
     @IBAction func shareFile(sender: AnyObject) {
         
-        let objectsToShare = [Constants.ShareMessage, _fieldManager.saveCurrentField()!]
+        var objectsToShare = [AnyObject]()
+        objectsToShare.append(Constants.ShareMessage)
+        
+        objectsToShare.splice(_fieldManager.saveAllFields() as [AnyObject], atIndex: objectsToShare.endIndex - 1)
+        
         let activityVC = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
 
         // New Excluded Activities Code
 
-        
         activityVC.excludedActivityTypes = [UIActivityTypeAirDrop, UIActivityTypeAddToReadingList, UIActivityTypeMessage,
             UIActivityTypeCopyToPasteboard]
         
         activityVC.title = Constants.ShareTitle
-        self.presentViewController(activityVC, animated: true, completion: nil)
-
+        
+        if UIDevice.currentDevice().userInterfaceIdiom == .Phone {
+            self.presentViewController(activityVC, animated: true, completion: nil)
+        } else {
+            // Change Rect to position Popover
+            let popup = UIPopoverController(contentViewController: activityVC)
+            popup.presentPopoverFromBarButtonItem(sender as UIBarButtonItem, permittedArrowDirections: .Any, animated: true)
+        }
     }
 
     @IBAction func goToUserLocation(sender: AnyObject) {
@@ -582,7 +592,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         
         return annotation
     }
-    
+    /*
     @IBAction func addFieldCorner(sender: UILongPressGestureRecognizer)
     {
         if !isEditable { return }
@@ -596,6 +606,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
             }
         }
     }
+    */
     
     var animatesCornerAddition : Bool = false
     @IBAction func addCorner(sender: AnyObject)
@@ -753,8 +764,8 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
             static let FieldSample = "Delete field and sample"
             static let SampleOnly = "Delete sample"
             static let Cancel = "Cancel"
-            static let DefineField = "Please tap the map to mark field corners."
-            static let DefineFieldAndSample = "Please tap the map to mark field corners, use the +/- buttons to generate samples."
+            static let DefineField = "Please use the 'Corner' button to drop in field corners."
+            static let DefineFieldAndSample = "Please use the 'Corner' button to drop in field corners, use the +/- buttons to generate samples."
             static let OK = "Ok"
         }
         struct GoToAlert {
@@ -765,8 +776,8 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         
         static let Title = "Define Sample"
         static let ClearedTitle = "Samples: 0"
-        static let ShareMessage = "This is a spreadsheet of latitude & longitude coordinates and penetrometer depths."
-        static let ShareTitle = "Share a spreadsheet of your penetrometer readings."
+        static let ShareMessage = "These are spreadsheets of latitude & longitude coordinates and penetrometer depths."
+        static let ShareTitle = "Share your penetrometer readings."
         
         struct Table {
             static let AnimationDuration :NSTimeInterval = 0.5
