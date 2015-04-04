@@ -424,6 +424,8 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
                 self.tableView.frame = CGRect(x: self._map.frame.origin.x, y: self._map.frame.height, width: self._map.frame.width, height: mapFrame.height * Constants.Table.HeightMultiplier)
 
                 self.tableConstraints.append(NSLayoutConstraint(item: self.tableView, attribute: .Bottom, relatedBy: .Equal, toItem: self.toolBar, attribute: .Top, multiplier: 1, constant: 0))
+                self.view.removeConstraint(self.mapToolBarConstraint)
+                
                 self.view.addConstraints(self.tableConstraints)
                 
                 if self.view.needsUpdateConstraints() { self.view.updateConstraints() }

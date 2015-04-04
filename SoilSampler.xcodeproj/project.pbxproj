@@ -27,7 +27,6 @@
 		228B53ED1AC240A6009A1F78 /* ContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228B53E91AC240A6009A1F78 /* ContainerViewController.swift */; };
 		228B53EF1AC240AE009A1F78 /* CustomAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228B53EE1AC240AE009A1F78 /* CustomAnnotation.swift */; };
 		228B53F11AC241E4009A1F78 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228B53F01AC241E4009A1F78 /* AppDelegate.swift */; };
-		22C960191AD03F5600AD1117 /* ToolBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22C960181AD03F5600AD1117 /* ToolBar.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,7 +66,6 @@
 		228B53E91AC240A6009A1F78 /* ContainerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContainerViewController.swift; sourceTree = "<group>"; };
 		228B53EE1AC240AE009A1F78 /* CustomAnnotation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomAnnotation.swift; sourceTree = "<group>"; };
 		228B53F01AC241E4009A1F78 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		22C960181AD03F5600AD1117 /* ToolBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToolBar.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,7 +108,6 @@
 			isa = PBXGroup;
 			children = (
 				228B53D41AC2401E009A1F78 /* Main.storyboard */,
-				22C960181AD03F5600AD1117 /* ToolBar.swift */,
 				228B53D71AC2402D009A1F78 /* ViewController.swift */,
 				228B53F01AC241E4009A1F78 /* AppDelegate.swift */,
 				228B53DB1AC2406A009A1F78 /* FieldManager.swift */,
@@ -299,7 +296,6 @@
 				228B53EA1AC240A6009A1F78 /* SidePanelViewController.swift in Sources */,
 				228B53E11AC2406A009A1F78 /* FieldManager.swift in Sources */,
 				228B53E01AC2406A009A1F78 /* CustomTableCell.swift in Sources */,
-				22C960191AD03F5600AD1117 /* ToolBar.swift in Sources */,
 				228B53EB1AC240A6009A1F78 /* SettingsViewController.swift in Sources */,
 				223AA9451AC8D2FE000F9DC2 /* SoilSampler.xcdatamodel in Sources */,
 			);

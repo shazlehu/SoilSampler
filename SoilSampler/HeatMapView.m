@@ -112,6 +112,14 @@ static const CGFloat kSBMaxAlpha = 0.85;
         *red = MAX(1 - 4 * (value - 0.875), 0.5);
         *green = *blue = 0;
     }
+    
+    // swapping red and blue
+    CGFloat temp = 0;
+    temp = *green;
+    *green = *red;
+    *red = *blue;
+    *blue = temp;
+
 }
 
 - (void)drawMapRect:(MKMapRect)mapRect
