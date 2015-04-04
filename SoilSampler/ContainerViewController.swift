@@ -32,18 +32,19 @@ class ContainerViewController: UIViewController, CenterViewControllerDelegate, S
     // this should be calculated progamatically, but that means populating the menu
     // tables and then finding the width of the widest item. Tried and failed....
     
-    var centerPanelExpandedOffset: CGFloat {// = 400 //60
+    var centerPanelExpandedOffset: CGFloat {
         get {
             let device = UIDevice.currentDevice()
-            let orientation = device.orientation
+            let app = UIApplication.sharedApplication()
             if device.userInterfaceIdiom == .Phone {
-                if orientation.isLandscape {
+                
+                if app.statusBarOrientation.isLandscape {
                     return 400
                 }
                 return 100
             }
             else {
-                if orientation.isLandscape {
+                if app.statusBarOrientation.isLandscape {
                     return 700
                 }
                 return 400
