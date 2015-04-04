@@ -56,30 +56,6 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         return true
     }
     
-    func newField()
-    {
-        _fieldManager.newField()
-        self.doClear(nil)
-        _textField.text = Constants.DefaultFieldTitle
-        _textField.textColor = UIColor.redColor()
-        isEditable = true
-    }
-
-    func deleteField(index: Int) -> Bool
-    {
-        if (_fieldManager.savedFields.count == 1)
-        {
-            let cancelAlert = UIAlertController(title: Constants.Alerts.CantDeleteLastField, message: nil, preferredStyle: UIAlertControllerStyle.Alert)
-            cancelAlert.addAction(UIAlertAction(title: Constants.Alerts.OK, style: UIAlertActionStyle.Default, handler: nil))
-            self.presentViewController(cancelAlert, animated: true, completion: nil)
-            return false
-        }
-        else {
-            _fieldManager.deleteField(index)
-            setCurrentField(_fieldManager.currentFieldIndex)
-            return true
-        }
-    }
     
     @IBOutlet weak var _map: MKMapView! {
         didSet {
@@ -172,6 +148,31 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         animatesCornerAddition = false
     }
     
+    func newField()
+    {
+        _fieldManager.newField()
+        self.doClear(nil)
+        _textField.text = Constants.DefaultFieldTitle
+        _textField.textColor = UIColor.redColor()
+        isEditable = true
+    }
+    
+    func deleteField(index: Int) -> Bool
+    {
+        if (_fieldManager.savedFields.count == 1)
+        {
+            let cancelAlert = UIAlertController(title: Constants.Alerts.CantDeleteLastField, message: nil, preferredStyle: UIAlertControllerStyle.Alert)
+            cancelAlert.addAction(UIAlertAction(title: Constants.Alerts.OK, style: UIAlertActionStyle.Default, handler: nil))
+            self.presentViewController(cancelAlert, animated: true, completion: nil)
+            return false
+        }
+        else {
+            _fieldManager.deleteField(index)
+            setCurrentField(_fieldManager.currentFieldIndex)
+            return true
+        }
+    }
+  
     func setCurrentField(index: Int)
     {
         hideSampleTable()
@@ -189,6 +190,8 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         else {
             toolBar.deActivate()
              sampleNumberStepper.tintColor = UIColor(red: 0.7, green: 0.7, blue: 0.7, alpha: 1)
+            userLocationButton.enabled = true
+            shareButton.enabled = true
         }
         
         addAnnotationsForCurrentField()
@@ -391,8 +394,9 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
             else {
                 self.toolBar.deActivate()
                  sampleNumberStepper.tintColor = UIColor(red: 0.7, green: 0.7, blue: 0.7, alpha: 1)
+                userLocationButton.enabled = true
+                shareButton.enabled = true
             }
-
         }
     }
 
@@ -786,7 +790,9 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         }
     }
 
+    @IBOutlet weak var shareButton: UIBarButtonItem!
     
+    @IBOutlet weak var userLocationButton: UIBarButtonItem!
 }
 
 extension UIToolbar {
@@ -800,7 +806,11 @@ extension UIToolbar {
         for button in self.items as [UIBarButtonItem] {
             button.enabled = false
         }
-        (self.items?.last as UIBarButtonItem).enabled = true
+        // last two items are location and share, should be always active
+//        if let endIndex = self.items?.endIndex {
+//            (self.items?[endIndex-2] as UIBarButtonItem).enabled = true
+//            (self.items?[endIndex-1] as UIBarButtonItem).enabled = true
+//        }
     }
 }
 

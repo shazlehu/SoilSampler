@@ -108,11 +108,15 @@ class FieldManager {
             if newValue > savedFields.endIndex {
                 _currentFieldIndex = savedFields.endIndex - 1
             }
-            if newValue < 0 {
+            else if newValue < 0 {
                 _currentFieldIndex = 0
+            }
+            else {
+                _currentFieldIndex = newValue
             }
         }
     }
+    
     var _currentField: Field {
         get {
             if _currentFieldIndex > savedFields.count {

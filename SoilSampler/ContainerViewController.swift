@@ -29,12 +29,23 @@ class ContainerViewController: UIViewController, CenterViewControllerDelegate, S
     var leftViewController: SidePanelViewController?
     var rightViewController: SavedFieldsTableViewController?
     
+    // this should be calculated progamatically, but that means populating the menu
+    // tables and then finding the width of the widest item. Tried and failed....
+    
     var centerPanelExpandedOffset: CGFloat {// = 400 //60
         get {
-            if UIDevice.currentDevice().userInterfaceIdiom == .Phone {
+            let device = UIDevice.currentDevice()
+            let orientation = device.orientation
+            if device.userInterfaceIdiom == .Phone {
+                if orientation.isLandscape {
+                    return 400
+                }
                 return 100
             }
             else {
+                if orientation.isLandscape {
+                    return 700
+                }
                 return 400
             }
         }

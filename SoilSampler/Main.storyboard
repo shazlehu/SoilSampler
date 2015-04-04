@@ -120,7 +120,9 @@
                         <outlet property="_layoutButton" destination="qRg-7D-sAf" id="9SX-gM-5FI"/>
                         <outlet property="_map" destination="aIf-k4-jCp" id="54h-wO-Gna"/>
                         <outlet property="sampleNumberStepper" destination="diX-c7-qgX" id="q3z-Fl-VL2"/>
+                        <outlet property="shareButton" destination="kgo-iI-BWv" id="Td8-uj-ntr"/>
                         <outlet property="toolBar" destination="hrT-sw-Lv3" id="gGO-52-Qh1"/>
+                        <outlet property="userLocationButton" destination="sag-xh-hUM" id="Z7V-ce-B9g"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -130,7 +132,6 @@
         <!--Settings-->
         <scene sceneID="taK-2d-NOH">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Idb-nM-1kJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <tableViewController storyboardIdentifier="SettingsViewController" title="Settings" id="5Mo-db-Wtr" customClass="SettingsViewController" customModule="SoilSampler" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="plain" separatorStyle="none" allowsSelection="NO" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="MPO-8J-edW">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
@@ -195,6 +196,7 @@
                         </connections>
                     </tableView>
                 </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Idb-nM-1kJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="783" y="735"/>
         </scene>
@@ -335,7 +337,7 @@
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="x9G-AF-5TE" id="r6E-KM-Ou2">
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ysP-ia-bDF">
+                                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ysP-ia-bDF">
                                                     <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                                     <nil key="highlightedColor"/>
