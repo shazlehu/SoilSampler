@@ -19,7 +19,7 @@ class CustomStepper: UIStepper {
         self.annotation = annotation
     }
     
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 }
@@ -32,16 +32,16 @@ class CustomTableCell: UITableViewCell {
         self.annotation = annotation
     }
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-    }
-    
+//    override init(frame: CGRect) {
+//        super.init(frame: frame)
+//    }
+//    
     override init(style: UITableViewCellStyle, reuseIdentifier: String?)
     {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
     }
     
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     

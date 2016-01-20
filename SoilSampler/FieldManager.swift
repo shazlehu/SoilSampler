@@ -14,19 +14,19 @@ import CoreLocation
 
 public func arc4random <T: IntegerLiteralConvertible> (type: T.Type) -> T {
     var r: T = 0
-    arc4random_buf(&r, UInt(sizeof(T)))
+    arc4random_buf(&r, Int(sizeof(T)))
     return r
 }
 
 public extension Double {
     /**
     Create a random num Double
-    :param: lower number Double
-    :param: upper number Double
+    - parameter lower: number Double
+    - parameter upper: number Double
     :return: random number Double
     By DaRkDOG
     */
-    public static func random(#lower: Double, upper: Double) -> Double {
+    public static func random(lower lower: Double, upper: Double) -> Double {
         let r = Double(arc4random(UInt64)) / Double(UInt64.max)
         return (r * (upper - lower)) + lower
     }
@@ -38,7 +38,7 @@ public extension CLLocationCoordinate2D {
     }
 }
 
-class Sample : Printable {
+class Sample : CustomStringConvertible {
     
     var point : CLLocationCoordinate2D = CLLocationCoordinate2D(latitude: 0,longitude: 0)
     var depth : Double = 0.0
@@ -56,7 +56,7 @@ class Sample : Printable {
     }
 }
 
-extension CLLocationCoordinate2D : Printable {
+extension CLLocationCoordinate2D : CustomStringConvertible {
     public var description : String {
         get {
             return "Corner,\(latitude),\(longitude),0.0"
@@ -175,13 +175,17 @@ class FieldManager {
     {
         // delete file
         let fileManager = NSFileManager.defaultManager()
-        let dir : NSURL = fileManager.URLsForDirectory(NSSearchPathDirectory.DocumentDirectory, inDomains: NSSearchPathDomainMask.UserDomainMask).last as NSURL
+        let dir : NSURL? = fileManager.URLsForDirectory(NSSearchPathDirectory.DocumentDirectory, inDomains: NSSearchPathDomainMask.UserDomainMask).last
         var err:NSError?
-        let fileURL =  dir.URLByAppendingPathComponent("\(savedFields[index].name).csv")
+        let fileURL =  dir!.URLByAppendingPathComponent("\(savedFields[index].name).csv")
         
         if fileManager.fileExistsAtPath(fileURL.path!) {
-            // delete old file
-            fileManager.removeItemAtURL(fileURL, error: &err)
+            do {
+                // delete old file
+                try fileManager.removeItemAtURL(fileURL)
+            } catch let error as NSError {
+                err = error
+            }
         }
         
         if (err != nil)
@@ -242,7 +246,7 @@ class FieldManager {
     
     // File is CSV of the format PointType = {Corner, Sample}, Latitude, Longitude, depth
     
-    enum PointType : Printable {
+    enum PointType : CustomStringConvertible {
         case Corner
         case Sample
         var description : String {
@@ -260,24 +264,26 @@ class FieldManager {
     func loadFieldsFromFile()
     {
         let fileManager = NSFileManager.defaultManager()
-        let dir : NSURL = fileManager.URLsForDirectory(NSSearchPathDirectory.DocumentDirectory, inDomains: NSSearchPathDomainMask.UserDomainMask).last as NSURL
+        let dir : NSURL? = fileManager.URLsForDirectory(NSSearchPathDirectory.DocumentDirectory, inDomains: NSSearchPathDomainMask.UserDomainMask).last
         
         var err:NSError?
 
-        if let files =  fileManager.contentsOfDirectoryAtURL(dir, includingPropertiesForKeys: nil,
-            options: NSDirectoryEnumerationOptions.SkipsHiddenFiles, error: &err)
-            as? [NSURL]
-        {
-            for (var i = 0; i < files.count; i++) {
-                if let fileHandle = NSFileHandle(forReadingFromURL: files[i], error: &err) {
-                    let data = NSString(data: fileHandle.readDataToEndOfFile(), encoding: NSUTF8StringEncoding) as String
+        do {
+            
+            let files = try fileManager.contentsOfDirectoryAtURL(dir!,  includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions.SkipsHiddenFiles)
+            var i = 0
+            for (i = 0; i < files.count; i++) {
+                do {
+                    let fileHandle = try NSFileHandle(forReadingFromURL: files[i])
+                    let data = NSString(data: fileHandle.readDataToEndOfFile(), encoding: NSUTF8StringEncoding) as! String
                     // read line by line
-                    let name = files[i].lastPathComponent?.stringByDeletingPathExtension
-                    savedFields.append(Field(named: name!))
+                    if let name = files[i].URLByDeletingPathExtension {
+                        savedFields.append(Field(named: name.absoluteString))
+                    }
                     
                     // tokenize by newline "\n"
                     let lines = data.componentsSeparatedByString("\n")
-
+                    
                     // first line is date
                     if let date = dateFormatter.dateFromString(lines[0]) {
                         savedFields[i].date = date
@@ -308,14 +314,15 @@ class FieldManager {
                         savedFields[i].isEditable = (nonZeroSamples.count == 0)
                     }
                     fileHandle.closeFile()
-                }
-                else {
+                } catch let error as NSError {
+                    err = error
                     NSLog("Can't open fileHandle \(err)")
                 }
             }
             // sort files by date
-            savedFields.sort({($0 as Field).date.compare(($1 as Field).date) == NSComparisonResult.OrderedAscending })
-            
+            self.savedFields.sortInPlace({($0 as Field).date.compare(($1 as Field).date) == NSComparisonResult.OrderedAscending })
+        } catch _ as NSError {
+        
         }
     }
     
@@ -332,7 +339,7 @@ class FieldManager {
     {
         let fileManager = NSFileManager.defaultManager()
 
-        let dir : NSURL = fileManager.URLsForDirectory(NSSearchPathDirectory.DocumentDirectory, inDomains: NSSearchPathDomainMask.UserDomainMask).last as NSURL
+        let dir : NSURL = fileManager.URLsForDirectory(NSSearchPathDirectory.DocumentDirectory, inDomains: NSSearchPathDomainMask.UserDomainMask).last! as NSURL
         var err:NSError?
         let fileURL =  dir.URLByAppendingPathComponent("\(field.name).csv")
         
@@ -349,10 +356,17 @@ class FieldManager {
         if let data = string.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false) {
             
             if fileManager.fileExistsAtPath(fileURL.path!) {
-                // delete old file
-                fileManager.removeItemAtURL(fileURL, error: &err)
+                do {
+                    // delete old file
+                    try fileManager.removeItemAtURL(fileURL)
+                } catch let error as NSError {
+                    err = error
+                }
             }
-            if !data.writeToURL(fileURL, options: .DataWritingAtomic, error: &err) {
+            do {
+                try data.writeToURL(fileURL, options: .DataWritingAtomic)
+            } catch let error as NSError {
+                err = error
                 NSLog("Can't write \(err)")
                 return nil
             }
@@ -459,7 +473,7 @@ class FieldManager {
         // sort points around center point
         
         let center = CLLocationCoordinate2D(latitude: (max.latitude + min.latitude) / 2, longitude: (max.longitude + min.longitude) / 2)
-        sortedCorners = _currentField.corners.sorted {
+        sortedCorners = _currentField.corners.sort {
             (a, b) in
             if (a.latitude - center.latitude >= 0 && b.latitude - center.latitude < 0) {
                 return true
@@ -498,11 +512,16 @@ class FieldManager {
             var c : Bool = false
             
             for var i = 0, j = poly.count - 1; i < poly.count; j = i++ {
-                if (((poly[i].longitude > point.longitude) !=
-                    (poly[j].longitude > point.longitude)) &&
-                    (point.latitude < (poly[j].latitude - poly[i].latitude) *
-                        (point.longitude-poly[i].longitude) /
-                        (poly[j].longitude - poly[i].longitude) + poly[i].latitude) )
+                
+                let foo = ((poly[i].longitude > point.longitude) !=
+                    (poly[j].longitude > point.longitude))
+                
+                let bar = (point.latitude <
+                    (poly[j].latitude - poly[i].latitude) *
+                    (point.longitude - poly[i].longitude) /
+                    (poly[j].longitude - poly[i].longitude) + poly[i].latitude)
+                
+                if ( foo && bar )
                 {
                     c = !c
                 }
@@ -510,7 +529,7 @@ class FieldManager {
             return c
         }
         
-        var totalTestPoints = 0
+       // var totalTestPoints = 0
         
         let side = sqrt(Double(sampleDensity))
         let deltaLat = (max.latitude - min.latitude) / side
@@ -552,7 +571,7 @@ class FieldManager {
             {
                 let end = _currentField.samples.endIndex - 1
                 let start = end - rowLength + 1
-                let reverseRow = _currentField.samples[start...end].reverse()
+                let reverseRow = Array(_currentField.samples[start...end].reverse())
                 _currentField.samples.replaceRange(start...end, with: reverseRow)
             }
         }

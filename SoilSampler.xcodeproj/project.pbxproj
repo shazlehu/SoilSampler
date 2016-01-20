@@ -20,7 +20,6 @@
 		228B53E21AC2406A009A1F78 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228B53DC1AC2406A009A1F78 /* LocationManager.swift */; };
 		228B53E31AC2406A009A1F78 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 228B53DD1AC2406A009A1F78 /* LaunchScreen.xib */; };
 		228B53E41AC2406A009A1F78 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 228B53DE1AC2406A009A1F78 /* Images.xcassets */; };
-		228B53E51AC2406A009A1F78 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 228B53DF1AC2406A009A1F78 /* Info.plist */; };
 		228B53EA1AC240A6009A1F78 /* SidePanelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228B53E61AC240A6009A1F78 /* SidePanelViewController.swift */; };
 		228B53EB1AC240A6009A1F78 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228B53E71AC240A6009A1F78 /* SettingsViewController.swift */; };
 		228B53EC1AC240A6009A1F78 /* CenterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228B53E81AC240A6009A1F78 /* CenterViewController.swift */; };
@@ -242,7 +241,9 @@
 		228B53A11AC23F97009A1F78 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0620;
+				LastSwiftMigration = 0700;
+				LastSwiftUpdateCheck = 0700;
+				LastUpgradeCheck = 0710;
 				ORGANIZATIONNAME = "Terranian Farm";
 				TargetAttributes = {
 					228B53A81AC23F98009A1F78 = {
@@ -281,7 +282,6 @@
 				228B53B91AC23F98009A1F78 /* LaunchScreen.xib in Resources */,
 				228B53E41AC2406A009A1F78 /* Images.xcassets in Resources */,
 				228B53E31AC2406A009A1F78 /* LaunchScreen.xib in Resources */,
-				228B53E51AC2406A009A1F78 /* Info.plist in Resources */,
 				228B53D51AC2401E009A1F78 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -367,6 +367,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -433,6 +434,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = SoilSampler/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "TF.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "SoilSampler/SoilSampler-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -446,6 +448,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = SoilSampler/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "TF.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "SoilSampler/SoilSampler-Bridging-Header.h";
 			};
@@ -465,6 +468,7 @@
 				);
 				INFOPLIST_FILE = SoilSamplerTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "TF.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SoilSampler.app/SoilSampler";
 			};
@@ -480,6 +484,7 @@
 				);
 				INFOPLIST_FILE = SoilSamplerTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "TF.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SoilSampler.app/SoilSampler";
 			};

@@ -125,7 +125,7 @@ class ContainerViewController: UIViewController, CenterViewControllerDelegate, S
         if (rightViewController == nil) {
             rightViewController = UIStoryboard.savedFieldViewController()
             rightViewController?.delegate = self
-            rightViewController?.mapViewController = centerViewController as ViewController
+            rightViewController?.mapViewController = centerViewController as! ViewController
             
             addChildSidePanelController(rightViewController!)
         }
@@ -133,7 +133,7 @@ class ContainerViewController: UIViewController, CenterViewControllerDelegate, S
     
     func addChildSidePanelController(sidePanelController: UIViewController) {
         if sidePanelController is SavedFieldsTableViewController {
-            (sidePanelController as SavedFieldsTableViewController).delegate = self
+            (sidePanelController as! SavedFieldsTableViewController).delegate = self
         }
         
         view.insertSubview(sidePanelController.view, atIndex: 0)
@@ -142,7 +142,7 @@ class ContainerViewController: UIViewController, CenterViewControllerDelegate, S
         sidePanelController.didMoveToParentViewController(self)
     }
     
-    func animateLeftPanel(#shouldExpand: Bool) {
+    func animateLeftPanel(shouldExpand shouldExpand: Bool) {
         if (shouldExpand) {
             currentState = .LeftPanelExpanded
             
@@ -157,7 +157,7 @@ class ContainerViewController: UIViewController, CenterViewControllerDelegate, S
         }
     }
     
-    func animateRightPanel(#shouldExpand: Bool) {
+    func animateRightPanel(shouldExpand shouldExpand: Bool) {
         if (shouldExpand) {
             currentState = .RightPanelExpanded
             
@@ -172,7 +172,7 @@ class ContainerViewController: UIViewController, CenterViewControllerDelegate, S
         }
     }
     
-    func animateCenterPanelXPosition(#targetPosition: CGFloat, completion: ((Bool) -> Void)! = nil) {
+    func animateCenterPanelXPosition(targetPosition targetPosition: CGFloat, completion: ((Bool) -> Void)! = nil) {
         UIView.animateWithDuration(0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0, options: .CurveEaseInOut, animations: {
             self.centerNavigationController.view.frame.origin.x = targetPosition
             }, completion: completion)
@@ -228,7 +228,7 @@ class ContainerViewController: UIViewController, CenterViewControllerDelegate, S
     }
 }
 
-extension ContainerViewController: SidePanelViewControllerDelegate {
+extension ContainerViewController {
     func itemSelected(vc: UIViewController) {
         vc.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Menu", style: .Plain, target: self, action: "toggleLeftPanel")
         self.centerNavigationController.viewControllers = [vc]
@@ -256,7 +256,7 @@ extension UIStoryboard {
         return mainStoryboard().instantiateViewControllerWithIdentifier("SettingsViewController") as? SettingsViewController
     }
     class func helpViewController() -> UIViewController? {
-        return UIStoryboard.mainStoryboard().instantiateViewControllerWithIdentifier("HelpViewController") as? UIViewController
+        return UIStoryboard.mainStoryboard().instantiateViewControllerWithIdentifier("HelpViewController") 
         
     }
     class func savedFieldViewController() -> SavedFieldsTableViewController? {

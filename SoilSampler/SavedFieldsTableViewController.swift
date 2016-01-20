@@ -58,7 +58,7 @@ class SavedFieldsTableViewController: UITableViewController, UIAlertViewDelegate
 
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("SavedFieldsTableCell", forIndexPath: indexPath) as SavedFieldsTableCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("SavedFieldsTableCell", forIndexPath: indexPath) as! SavedFieldsTableCell
 
         let field = mapViewController._fieldManager.savedFields[indexPath.item]
         // Configure the cell...
@@ -75,9 +75,9 @@ class SavedFieldsTableViewController: UITableViewController, UIAlertViewDelegate
 
     var _fieldToDelete : NSIndexPath?
     
-    override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [AnyObject]? {
+    override func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
         
-        var moreRowAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Edit", handler:
+        let moreRowAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Edit", handler:
             {_, indexPath in
                 self.mapViewController.setCurrentField(indexPath.item)
                 self.delegate?.itemSelected(self.mapViewController)
@@ -87,9 +87,9 @@ class SavedFieldsTableViewController: UITableViewController, UIAlertViewDelegate
         })
         moreRowAction.backgroundColor = UIColor(red: 0.298, green: 0.851, blue: 0.3922, alpha: 1.0);
         
-        var deleteRowAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Delete", handler:{_, indexPath in
+        let deleteRowAction = UITableViewRowAction(style: UITableViewRowActionStyle.Default, title: "Delete", handler:{_, indexPath in
             if self.mapViewController.deleteField(indexPath.item) {
-                var paths = [AnyObject]()
+                var paths = [NSIndexPath]()
                 paths.append(indexPath)
                 tableView.deleteRowsAtIndexPaths(paths, withRowAnimation: UITableViewRowAnimation.Automatic)
             }
@@ -116,7 +116,7 @@ class SavedFieldsTableViewController: UITableViewController, UIAlertViewDelegate
     func deleteField(action: UIAlertAction!)
     {
         if mapViewController.deleteField(_fieldToDelete!.item) {
-            var paths = [AnyObject]()
+            var paths = [NSIndexPath]()
             paths.append(_fieldToDelete!)
             tableView.deleteRowsAtIndexPaths(paths, withRowAnimation: UITableViewRowAnimation.Automatic)
         }

@@ -50,7 +50,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     }
     
     func textFieldShouldReturn(textField: UITextField) -> Bool {
-        _fieldManager.setFieldName(textField.text)
+        _fieldManager.setFieldName(textField.text!)
         textField.resignFirstResponder()
         _textField.textColor = UIColor.blackColor()
         return true
@@ -62,7 +62,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
             _map.showsUserLocation = true
             _map.mapType = MKMapType.Hybrid
             _map.delegate = self
-            var region = MKCoordinateRegion(center: _map.userLocation.coordinate, span: Constants.StartSpan)
+            let region = MKCoordinateRegion(center: _map.userLocation.coordinate, span: Constants.StartSpan)
             _map.setRegion(region, animated: false)
         }
     }
@@ -70,7 +70,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     
     @IBOutlet weak var _layoutButton: UIBarButtonItem! {
         didSet {
-            _layoutButton.possibleTitles = NSSet(array: ["Grid", "Random"])
+            _layoutButton.possibleTitles = NSSet(array: ["Grid", "Random"]) as? Set<String>
         }
     }
     @IBAction func changeSampleLayout(sender: UIBarButtonItem)
@@ -85,7 +85,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     }
 
 
-    enum Layout : Printable {
+    enum Layout : CustomStringConvertible {
         case Grid
         case Random
         var description :String {
@@ -130,16 +130,16 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     func addAnnotationsForCurrentField()
     {
         // place any annotations saved in the current field
-        for (index, corner) in enumerate(_fieldManager._currentField.corners) {
+        for (index, corner) in _fieldManager._currentField.corners.enumerate() {
             let newCorner = addFieldCorner(corner, fieldIndex: index)
             newCorner.isEditable = isEditable
         }
         
-        for (index, sample) in enumerate(_fieldManager._currentField.samples) {
+        for (index, sample) in _fieldManager._currentField.samples.enumerate() {
             
-            var annotation = CustomAnnotation(index: index)
+            let annotation = CustomAnnotation(index: index)
             
-            annotation.setCoordinate(sample.point)
+            annotation.coordinate = sample.point
             annotation.isCorner = false
             
             _map.addAnnotation(annotation)
@@ -178,8 +178,8 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         hideSampleTable()
         heatMapOn = false
         _fieldManager.currentFieldIndex = index
-        _map.removeAnnotations(sampleAnnotations)
-        _map.removeAnnotations(fieldAnnotations)
+        _map.removeAnnotations(sampleAnnotations as! [MKAnnotation])
+        _map.removeAnnotations(fieldAnnotations as! [MKAnnotation])
         sampleAnnotations.removeAll(keepCapacity: true)
         fieldAnnotations.removeAll(keepCapacity: true)
         
@@ -260,7 +260,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         var objectsToShare = [AnyObject]()
         objectsToShare.append(Constants.ShareMessage)
         
-        objectsToShare.splice(_fieldManager.saveAllFields() as [AnyObject], atIndex: objectsToShare.endIndex - 1)
+        objectsToShare.insertContentsOf(_fieldManager.saveAllFields() as [AnyObject], at: objectsToShare.endIndex - 1)
         
         let activityVC = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
 
@@ -276,7 +276,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         } else {
             // Change Rect to position Popover
             let popup = UIPopoverController(contentViewController: activityVC)
-            popup.presentPopoverFromBarButtonItem(sender as UIBarButtonItem, permittedArrowDirections: .Any, animated: true)
+            popup.presentPopoverFromBarButtonItem(sender as! UIBarButtonItem, permittedArrowDirections: .Any, animated: true)
         }
     }
 
@@ -350,11 +350,11 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         
         if let samples = _fieldManager.generateTestPoints(_layOut == .Random) {
         
-            for (i, sample) in enumerate(samples) {
+            for (i, sample) in samples.enumerate() {
             
-                var annotation = CustomAnnotation(index: i)
+                let annotation = CustomAnnotation(index: i)
         
-                annotation.setCoordinate(sample.point)
+                annotation.coordinate = sample.point
                 annotation.isCorner = false
                 
                 _map.addAnnotation(annotation)
@@ -426,7 +426,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
                 self.tableConstraints.append(NSLayoutConstraint(item: self.tableView, attribute: .Bottom, relatedBy: .Equal, toItem: self.toolBar, attribute: .Top, multiplier: 1, constant: 0))
                 self.view.removeConstraint(self.mapToolBarConstraint)
                 
-                self.view.addConstraints(self.tableConstraints)
+                self.view.addConstraints(self.tableConstraints as! [NSLayoutConstraint])
                 
                 if self.view.needsUpdateConstraints() { self.view.updateConstraints() }
             }
@@ -438,7 +438,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         if (tableView != nil) {
             UIView.animateWithDuration(Constants.Table.AnimationDuration) {
                 self.tableView.removeFromSuperview()
-                self.view.removeConstraints(self.tableConstraints)
+                self.view.removeConstraints(self.tableConstraints as! [NSLayoutConstraint])
                 self.tableConstraints.removeAll(keepCapacity: true)
                 self.view.addConstraint(self.mapToolBarConstraint)
                 
@@ -517,7 +517,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
             let label = UILabel(frame: CGRect(x:8, y:0, width:200, height:50))
             let sample = _fieldManager[indexPath.item]
             let point = sample.point
-            let cAnnotation = sampleAnnotations[indexPath.item] as CustomAnnotation
+            let cAnnotation = sampleAnnotations[indexPath.item] as! CustomAnnotation
             let cell = CustomTableCell(annotation: cAnnotation, style: UITableViewCellStyle(rawValue: 0)!, reuseIdentified:indexPath.description)
             nf.maximumSignificantDigits = 5
             label.text = "(\(nf.stringFromNumber(point.latitude)!),\(nf.stringFromNumber(point.longitude)!), \(nf.stringFromNumber(sample.depth)!))"
@@ -531,8 +531,8 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
             cell.addSubview(stepper)
             
             if indexPath.item == 0 {
-                var span = MKCoordinateSpanMake(0.001, 0.001)
-                var region = MKCoordinateRegion(center: point, span: span)
+                let span = MKCoordinateSpanMake(0.001, 0.001)
+                let region = MKCoordinateRegion(center: point, span: span)
                 
                 _map.setRegion(region, animated: false)
             }
@@ -548,11 +548,11 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         didSet {
             if heatMapOn {
                 if hm == nil {
-                    hm = HeatMap(data: _fieldManager._currentField.heatMapDict)
+                    hm = HeatMap(data: _fieldManager._currentField.heatMapDict as [NSObject : AnyObject])
                 }
                 else {
                     _map.removeOverlay(hm)
-                    hm.setData(_fieldManager._currentField.heatMapDict)
+                    hm.setData(_fieldManager._currentField.heatMapDict as [NSObject : AnyObject])
                 }
                 _map.addOverlay(hm)
             }
@@ -566,10 +566,10 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     var annotationsOn : Bool = true {
         didSet {
             if annotationsOn {
-                _map.addAnnotations(sampleAnnotations)
+                _map.addAnnotations(sampleAnnotations as! [MKAnnotation])
             }
             else {
-                _map.removeAnnotations(sampleAnnotations)
+                _map.removeAnnotations(sampleAnnotations as! [MKAnnotation])
             }
         }
     }
@@ -577,10 +577,10 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     var fieldOn : Bool = true {
         didSet {
             if fieldOn {
-                _map.addAnnotations(fieldAnnotations)
+                _map.addAnnotations(fieldAnnotations as! [MKAnnotation])
             }
             else {
-                _map.removeAnnotations(fieldAnnotations)
+                _map.removeAnnotations(fieldAnnotations as! [MKAnnotation])
             }
         }
     }
@@ -589,10 +589,10 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
   
     func addFieldCorner(coord: CLLocationCoordinate2D, fieldIndex: Int) -> CustomAnnotation
     {
-        var annotation = CustomAnnotation(index: fieldIndex)
+        let annotation = CustomAnnotation(index: fieldIndex)
         
         annotation.isCorner = true
-        annotation.setCoordinate(coord)
+        annotation.coordinate = coord
         _map.addAnnotation(annotation)
         fieldAnnotations.append(annotation)
         
@@ -629,15 +629,15 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     }
 
     
-    func mapView(mapView: MKMapView!, didDeselectAnnotationView view: MKAnnotationView!) {
+    func mapView(mapView: MKMapView, didDeselectAnnotationView view: MKAnnotationView) {
         view.setSelected(true, animated: false)
     }
     
-    func mapView(mapView: MKMapView!, viewForOverlay overlay: MKOverlay!) -> MKOverlayView! {
-        return HeatMapView(overlay: overlay)
+    func mapView(mapView: MKMapView, viewForOverlay overlay: MKOverlay) -> MKOverlayView {
+        return MKOverlayView() //(overlay: overlay)
     }
 
-    func mapView(mapView: MKMapView!, didAddAnnotationViews views: [AnyObject]!) {
+    func mapView(mapView: MKMapView, didAddAnnotationViews views: [MKAnnotationView]) {
         if !animatesCornerAddition { return }
         var i = -1;
         for view in views {
@@ -647,9 +647,9 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
                 continue;
             }
             
-            if let customAnnotation = view as? CustomAnnotationView {
+            if let _ = view as? CustomAnnotationView {
             // Check if current annotation is inside visible map rect, else go to next one
-                let point:MKMapPoint  =  MKMapPointForCoordinate(mkView.annotation.coordinate);
+                let point:MKMapPoint  =  MKMapPointForCoordinate(mkView.annotation!.coordinate);
                 if (!MKMapRectContainsPoint(self._map.visibleMapRect, point)) {
                     continue;
                 }
@@ -679,8 +679,8 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         }
     }
     
-    func mapView(mapView: MKMapView!,
-        viewForAnnotation annotation: MKAnnotation!) -> MKAnnotationView!
+    func mapView(mapView: MKMapView,
+        viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView?
     {
         if annotation is MKUserLocation {
             //return nil so map view draws "blue dot" for standard user location
@@ -689,7 +689,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         
         if let a = annotation as? CustomAnnotation {
             if a.isCorner {
-                var pinView = mapView.dequeueReusableAnnotationViewWithIdentifier("Corner") as? MKPinAnnotationView
+                let pinView = mapView.dequeueReusableAnnotationViewWithIdentifier("Corner") as? MKPinAnnotationView
                 if pinView == nil {
                     let annotationView = CustomAnnotationView(annotation: a, reuseIdentifier: "Corner")
                     return annotationView
@@ -715,7 +715,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         return nil
     }
     
-    func mapView(mapView: MKMapView!, annotationView view: MKAnnotationView!, didChangeDragState newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState)
+    func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, didChangeDragState newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState)
     {
         if newState == MKAnnotationViewDragState.Starting {
             view.image = UIImage(named: "draggable_icon_selected")
@@ -736,8 +736,8 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     }
     
     private var hasSetUserLocation = false
-    func mapView(mapView: MKMapView!,
-        didUpdateUserLocation userLocation: MKUserLocation!)
+    func mapView(mapView: MKMapView,
+        didUpdateUserLocation userLocation: MKUserLocation)
     {
         if (!hasSetUserLocation) { goToUserLocation(self) }
         hasSetUserLocation = true
@@ -799,13 +799,13 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
 
 extension UIToolbar {
     func activate() {
-        for button in self.items as [UIBarButtonItem] {
+        for button in self.items! as [UIBarButtonItem] {
             button.enabled = true
         }
     }
     
     func deActivate() {
-        for button in self.items as [UIBarButtonItem] {
+        for button in self.items! as [UIBarButtonItem] {
             button.enabled = false
         }
         // last two items are location and share, should be always active

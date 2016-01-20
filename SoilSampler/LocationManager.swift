@@ -44,8 +44,8 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     var myLocations = [CLLocation]()
     var location: CLLocation = CLLocation(latitude: 0,longitude: 0)
     
-    func locationManager(manager: CLLocationManager!,
-        didUpdateLocations locations: [AnyObject]!)
+    func locationManager(manager: CLLocationManager,
+        didUpdateLocations locations: [CLLocation])
     {
         
         let loc = locations as [CLLocation]
@@ -60,7 +60,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     }
     
 
-    func locationManager(manager: CLLocationManager!,
+    func locationManager(manager: CLLocationManager,
         didChangeAuthorizationStatus status: CLAuthorizationStatus)
     {
         locationStatus = status

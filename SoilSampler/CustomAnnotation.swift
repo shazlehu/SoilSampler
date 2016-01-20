@@ -23,33 +23,33 @@ class CustomAnnotation: NSObject, MKAnnotation {
     var coordinate = CLLocationCoordinate2D(latitude: 0,longitude: 0)
     
     var coord : CLLocation { get { return CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude) }}
-    func setCoordinate(newCoordinate: CLLocationCoordinate2D) {
-        self.coordinate = newCoordinate
-    }
-    var title: String! = nil
-    var subtitle: String! = nil
+//    func setCoordinate(newCoordinate: CLLocationCoordinate2D) {
+//        self.coordinate = newCoordinate
+//    }
+    var title: String? = nil
+    var subtitle: String? = nil
     
     
 }
 
 class CustomAnnotationView: MKAnnotationView {
     
-    override init(annotation: MKAnnotation!, reuseIdentifier: String!)
+    override init(annotation: MKAnnotation?, reuseIdentifier: String?)
     {
         super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
         self.image = UIImage(named: "draggable_icon")
-        self.draggable = (annotation as CustomAnnotation).isEditable
+        self.draggable = (annotation as! CustomAnnotation).isEditable
     }
     
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     required override init(frame: CGRect) {
         super.init(frame: frame)
     }
     
-    override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-        self.draggable = (self.annotation as CustomAnnotation).isEditable
+    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        self.draggable = (self.annotation as! CustomAnnotation).isEditable
         self.setSelected(true, animated: true)
         super.touchesBegan(touches, withEvent: event)
     }

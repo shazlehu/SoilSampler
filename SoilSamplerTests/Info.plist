@@ -2,18 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSLocationUsageDescription</key>
-	<string>I need location</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app needs location information</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This app relies on location information</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
-	<string>TF.$(PRODUCT_NAME:rfc1034identifier)</string>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -26,5 +20,11 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app relies on location information</string>
+	<key>NSLocationUsageDescription</key>
+	<string>I need location</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app needs location information</string>
 </dict>
 </plist>
