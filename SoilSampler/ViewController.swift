@@ -548,11 +548,11 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         didSet {
             if heatMapOn {
                 if hm == nil {
-                    hm = HeatMap(data: _fieldManager._currentField.heatMapDict as [NSObject : AnyObject])
+                    hm = HeatMap(withHeatMapData: _fieldManager._currentField.heatMapDict)
                 }
                 else {
                     _map.removeOverlay(hm)
-                    hm.setData(_fieldManager._currentField.heatMapDict as [NSObject : AnyObject])
+                    hm.setData(_fieldManager._currentField.heatMapDict)
                 }
                 _map.addOverlay(hm)
             }
@@ -633,8 +633,13 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         view.setSelected(true, animated: false)
     }
     
-    func mapView(mapView: MKMapView, viewForOverlay overlay: MKOverlay) -> MKOverlayView {
-        return MKOverlayView() //(overlay: overlay)
+//    func mapView(mapView: MKMapView, viewForOverlay overlay: MKOverlay) -> MKOverlayView
+//    {
+//        return HeatMapView(overlay: overlay)
+//    }
+    func mapView(mapView: MKMapView, rendererForOverlay overlay: MKOverlay) -> MKOverlayRenderer
+    {
+        return HeatMapRenderer(overlay: overlay)
     }
 
     func mapView(mapView: MKMapView, didAddAnnotationViews views: [MKAnnotationView]) {

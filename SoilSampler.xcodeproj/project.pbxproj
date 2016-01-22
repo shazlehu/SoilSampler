@@ -11,8 +11,6 @@
 		223AA9451AC8D2FE000F9DC2 /* SoilSampler.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = 223AA9441AC8D2FE000F9DC2 /* SoilSampler.xcdatamodel */; };
 		228B53B91AC23F98009A1F78 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 228B53B71AC23F98009A1F78 /* LaunchScreen.xib */; };
 		228B53C51AC23F98009A1F78 /* SoilSamplerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228B53C41AC23F98009A1F78 /* SoilSamplerTests.swift */; };
-		228B53D21AC23FFD009A1F78 /* HeatMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 228B53CF1AC23FFD009A1F78 /* HeatMap.m */; };
-		228B53D31AC23FFD009A1F78 /* HeatMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = 228B53D11AC23FFD009A1F78 /* HeatMapView.m */; };
 		228B53D51AC2401E009A1F78 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 228B53D41AC2401E009A1F78 /* Main.storyboard */; };
 		228B53D81AC2402D009A1F78 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228B53D71AC2402D009A1F78 /* ViewController.swift */; };
 		228B53E01AC2406A009A1F78 /* CustomTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228B53DA1AC2406A009A1F78 /* CustomTableCell.swift */; };
@@ -26,6 +24,8 @@
 		228B53ED1AC240A6009A1F78 /* ContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228B53E91AC240A6009A1F78 /* ContainerViewController.swift */; };
 		228B53EF1AC240AE009A1F78 /* CustomAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228B53EE1AC240AE009A1F78 /* CustomAnnotation.swift */; };
 		228B53F11AC241E4009A1F78 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 228B53F01AC241E4009A1F78 /* AppDelegate.swift */; };
+		22A439431C5008D9004169BF /* HeatMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A439421C5008D9004169BF /* HeatMap.swift */; };
+		22A439451C5008EF004169BF /* HeatMapRender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A439441C5008EF004169BF /* HeatMapRender.swift */; };
 		22D675BC1AD4BEE40041B052 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22D675BB1AD4BEE40041B052 /* CoreLocation.framework */; };
 		22D675BE1AD4BEF20041B052 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22D675BD1AD4BEF20041B052 /* MapKit.framework */; };
 		22D675C01AD4BF3C0041B052 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22D675BF1AD4BF3C0041B052 /* UIKit.framework */; };
@@ -50,13 +50,8 @@
 		228B53BE1AC23F98009A1F78 /* SoilSamplerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SoilSamplerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		228B53C31AC23F98009A1F78 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		228B53C41AC23F98009A1F78 /* SoilSamplerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoilSamplerTests.swift; sourceTree = "<group>"; };
-		228B53CE1AC23FFD009A1F78 /* HeatMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HeatMap.h; sourceTree = "<group>"; };
-		228B53CF1AC23FFD009A1F78 /* HeatMap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HeatMap.m; sourceTree = "<group>"; };
-		228B53D01AC23FFD009A1F78 /* HeatMapView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HeatMapView.h; sourceTree = "<group>"; };
-		228B53D11AC23FFD009A1F78 /* HeatMapView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HeatMapView.m; sourceTree = "<group>"; };
 		228B53D41AC2401E009A1F78 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		228B53D71AC2402D009A1F78 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		228B53D91AC24048009A1F78 /* SoilSampler-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SoilSampler-Bridging-Header.h"; sourceTree = "<group>"; };
 		228B53DA1AC2406A009A1F78 /* CustomTableCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomTableCell.swift; sourceTree = "<group>"; };
 		228B53DB1AC2406A009A1F78 /* FieldManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FieldManager.swift; sourceTree = "<group>"; };
 		228B53DC1AC2406A009A1F78 /* LocationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
@@ -69,6 +64,8 @@
 		228B53E91AC240A6009A1F78 /* ContainerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContainerViewController.swift; sourceTree = "<group>"; };
 		228B53EE1AC240AE009A1F78 /* CustomAnnotation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomAnnotation.swift; sourceTree = "<group>"; };
 		228B53F01AC241E4009A1F78 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		22A439421C5008D9004169BF /* HeatMap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeatMap.swift; sourceTree = "<group>"; };
+		22A439441C5008EF004169BF /* HeatMapRender.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeatMapRender.swift; sourceTree = "<group>"; };
 		22D675BB1AD4BEE40041B052 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		22D675BD1AD4BEF20041B052 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		22D675BF1AD4BF3C0041B052 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -144,7 +141,6 @@
 				228B53DD1AC2406A009A1F78 /* LaunchScreen.xib */,
 				228B53DE1AC2406A009A1F78 /* Images.xcassets */,
 				228B53DF1AC2406A009A1F78 /* Info.plist */,
-				228B53D91AC24048009A1F78 /* SoilSampler-Bridging-Header.h */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -180,10 +176,8 @@
 		228B53F31AC24310009A1F78 /* Heat Map */ = {
 			isa = PBXGroup;
 			children = (
-				228B53D11AC23FFD009A1F78 /* HeatMapView.m */,
-				228B53CE1AC23FFD009A1F78 /* HeatMap.h */,
-				228B53CF1AC23FFD009A1F78 /* HeatMap.m */,
-				228B53D01AC23FFD009A1F78 /* HeatMapView.h */,
+				22A439421C5008D9004169BF /* HeatMap.swift */,
+				22A439441C5008EF004169BF /* HeatMapRender.swift */,
 			);
 			name = "Heat Map";
 			sourceTree = "<group>";
@@ -303,11 +297,11 @@
 				222BB8A11AC9942D0098F2B4 /* SavedFieldsTableViewController.swift in Sources */,
 				228B53F11AC241E4009A1F78 /* AppDelegate.swift in Sources */,
 				228B53D81AC2402D009A1F78 /* ViewController.swift in Sources */,
-				228B53D21AC23FFD009A1F78 /* HeatMap.m in Sources */,
 				228B53ED1AC240A6009A1F78 /* ContainerViewController.swift in Sources */,
+				22A439431C5008D9004169BF /* HeatMap.swift in Sources */,
 				228B53E21AC2406A009A1F78 /* LocationManager.swift in Sources */,
+				22A439451C5008EF004169BF /* HeatMapRender.swift in Sources */,
 				228B53EC1AC240A6009A1F78 /* CenterViewController.swift in Sources */,
-				228B53D31AC23FFD009A1F78 /* HeatMapView.m in Sources */,
 				228B53EF1AC240AE009A1F78 /* CustomAnnotation.swift in Sources */,
 				228B53EA1AC240A6009A1F78 /* SidePanelViewController.swift in Sources */,
 				228B53E11AC2406A009A1F78 /* FieldManager.swift in Sources */,
@@ -436,7 +430,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "TF.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "SoilSampler/SoilSampler-Bridging-Header.h";
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -450,7 +445,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "TF.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "SoilSampler/SoilSampler-Bridging-Header.h";
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 			};
 			name = Release;
 		};

@@ -78,6 +78,7 @@ class Field {
     init(named: String) {
         name = named
     }
+    /*
     var heatMapDict: NSMutableDictionary {
         get {
             let hmDict = NSMutableDictionary()
@@ -93,6 +94,19 @@ class Field {
             return hmDict
         }
     }
+*/
+    var heatMapDict: [MKMapPoint:Float] {
+        get {
+            var hmDict = [MKMapPoint:Float]()
+            for s in samples {
+                let mp = MKMapPointForCoordinate(s.point)
+                
+                hmDict[mp] = Float(s.depth)
+            }
+            return hmDict
+        }
+    }
+
 }
 
 class FieldManager {
