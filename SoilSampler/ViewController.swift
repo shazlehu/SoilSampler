@@ -525,7 +525,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
             let stepper = CustomStepper(frame: CGRect(x:200, y:8, width:100, height:50), aLabel: label, index: indexPath.item,annotation: cAnnotation)
             
             stepper.autorepeat = true
-            stepper.addTarget(self, action: "stepperValueChanged:", forControlEvents: .ValueChanged)
+            stepper.addTarget(self, action: #selector(ViewController.stepperValueChanged(_:)), forControlEvents: .ValueChanged)
             stepper.value = sample.depth
             cell.addSubview(label)
             cell.addSubview(stepper)
@@ -646,7 +646,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         if !animatesCornerAddition { return }
         var i = -1;
         for view in views {
-            i++;
+            i += 1;
             let mkView = view as MKAnnotationView
             if view.annotation is MKUserLocation {
                 continue;

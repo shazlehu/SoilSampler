@@ -149,7 +149,7 @@ class HeatMap : NSObject, MKOverlay {
             }
         }
         
-        for var i = 0; i < HeatMap.kSBZoomZeroDimension * HeatMap.kSBZoomZeroDimension; i++ {
+        for i in 0 ..< HeatMap.kSBZoomZeroDimension * HeatMap.kSBZoomZeroDimension {
             if buckets[i] > self._zoomedOutMax {
                 self._zoomedOutMax = buckets[i]
             }

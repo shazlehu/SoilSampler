@@ -178,7 +178,7 @@ class FieldManager {
         var newName : String = FieldConstants.DefaultName
         var suffix = 1
         while ((names.filter {$0 == newName}).count > 0) {
-            newName = FieldConstants.DefaultName + "-\(suffix++)"
+            newName = FieldConstants.DefaultName + "-\(suffix+=1)"
         }
         
         savedFields.append(Field(named: newName))
@@ -211,7 +211,7 @@ class FieldManager {
         savedFields.removeAtIndex(index)
         
         if currentFieldIndex >= index {
-            currentFieldIndex--
+            currentFieldIndex -= 1
         }
 
     }
@@ -285,8 +285,8 @@ class FieldManager {
         do {
             
             let files = try fileManager.contentsOfDirectoryAtURL(dir!,  includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions.SkipsHiddenFiles)
-            var i = 0
-            for (i = 0; i < files.count; i++) {
+            
+            for i in 0 ..< files.count {
                 do {
                     let fileHandle = try NSFileHandle(forReadingFromURL: files[i])
                     let data = NSString(data: fileHandle.readDataToEndOfFile(), encoding: NSUTF8StringEncoding) as! String
@@ -303,7 +303,7 @@ class FieldManager {
                         savedFields[i].date = date
                     }
                     
-                    for (var j = 1; j < lines.count; j++) {
+                    for j in 1 ..< lines.count {
                         let sampleVals = lines[j].componentsSeparatedByString(",")
                         
                         switch sampleVals[0] {
@@ -411,7 +411,7 @@ class FieldManager {
     func findLongestSide(isVertical: Bool) -> (start: CLLocationCoordinate2D, end: CLLocationCoordinate2D)
     {
         var candidateSides = [(CLLocationCoordinate2D,CLLocationCoordinate2D)]()
-        for (var i = 0; i < _currentField.corners.count - 1; i++) {
+        for i in 0 ..< _currentField.corners.count - 1 {
             let slope = abs(getSlope(_currentField.corners[i], end: _currentField.corners[i+1]))
             if (slope > 1) && isVertical {
                 candidateSides.append((_currentField.corners[i], _currentField.corners[i+1]))
@@ -524,21 +524,35 @@ class FieldManager {
         func pointInPolygon(point: CLLocationCoordinate2D, polygon poly: [CLLocationCoordinate2D]) -> Bool
         {
             var c : Bool = false
-            
-            for var i = 0, j = poly.count - 1; i < poly.count; j = i++ {
-                
-                let foo = ((poly[i].longitude > point.longitude) !=
-                    (poly[j].longitude > point.longitude))
-                
-                let bar = (point.latitude <
-                    (poly[j].latitude - poly[i].latitude) *
+            var i = 0
+            var j = poly.count - 1
+            while i < poly.count {
+                if (poly[i].longitude > point.longitude) != (poly[j].longitude > point.longitude) {
+                    if point.latitude <
+                    ((poly[j].latitude - poly[i].latitude) *
                     (point.longitude - poly[i].longitude) /
-                    (poly[j].longitude - poly[i].longitude) + poly[i].latitude)
-                
-                if ( foo && bar )
-                {
-                    c = !c
+                    (poly[j].longitude - poly[i].longitude)) +
+                        poly[i].latitude {
+                        c = !c
+                    }
+            // handle the case when the point is on the line
+                    if point.latitude ==
+                        ((poly[j].latitude - poly[i].latitude) *
+                        (point.longitude - poly[i].longitude) /
+                        (poly[j].longitude - poly[i].longitude)) +
+                        poly[i].latitude {
+                        return true
+                    }
                 }
+            // case where point lies on horizontal line
+                else if poly[i].longitude == point.longitude && poly[j].longitude == point.longitude {
+                    if (point.latitude > poly[i].latitude && point.latitude < poly[j].latitude) || (point.latitude < poly[i].latitude && point.latitude > poly[j].latitude){
+                        return true
+                    }
+                }
+            
+                j = i
+                i += 1
             }
             return c
         }
@@ -558,10 +572,10 @@ class FieldManager {
         (start,end) = findLongestLongitudeSide()!
         let latFunc = getXaxisFunc(start, end: end)
         
-        for var i = 0; i < Int(side) + 1; i++ {
+        for i in 0 ..< Int(side) + 1 {
             
             var rowLength = 0 // count of how many points lie in the polygon
-            for var j = 0; j < Int(side) + 1; j++ {
+            for j in 0 ..< Int(side) + 1 {
 
                 var p = CLLocationCoordinate2D(latitude: min.latitude + deltaLat * Double(i), longitude: min.longitude + deltaLong * Double(j))
                 
@@ -576,7 +590,7 @@ class FieldManager {
                 
                 if pointInPolygon(p, polygon: sortedCorners) {
                     _currentField.samples.append(Sample(point: p, depth: 0))
-                    rowLength++
+                    rowLength += 1
                }
             }
 

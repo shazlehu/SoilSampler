@@ -69,7 +69,7 @@ class ContainerViewController: UIViewController, CenterViewControllerDelegate, S
         
         centerNavigationController.didMoveToParentViewController(self)
         
-        let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: "handlePanGesture:")
+        let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(ContainerViewController.handlePanGesture(_:)))
         centerNavigationController.view.addGestureRecognizer(panGestureRecognizer)
     }
     
@@ -230,7 +230,7 @@ class ContainerViewController: UIViewController, CenterViewControllerDelegate, S
 
 extension ContainerViewController {
     func itemSelected(vc: UIViewController) {
-        vc.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Menu", style: .Plain, target: self, action: "toggleLeftPanel")
+        vc.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Menu", style: .Plain, target: self, action: #selector(CenterViewControllerDelegate.toggleLeftPanel))
         self.centerNavigationController.viewControllers = [vc]
         self.collapseSidePanels()
     }

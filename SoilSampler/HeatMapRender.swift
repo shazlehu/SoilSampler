@@ -41,8 +41,8 @@ class HeatMapRenderer : MKOverlayRenderer {
     
     func populateScaleMatrix()
     {
-        for var i = 0; i < 2 * HeatMapRenderer.kSBHeatRadiusInPoints; i++ {
-            for var j = 0; j < 2 * HeatMapRenderer.kSBHeatRadiusInPoints; j++ {
+        for i in 0 ..< 2 * HeatMapRenderer.kSBHeatRadiusInPoints {
+            for j in 0 ..< 2 * HeatMapRenderer.kSBHeatRadiusInPoints {
                 let iDiff = i - HeatMapRenderer.kSBHeatRadiusInPoints
                 let jDiff = j - HeatMapRenderer.kSBHeatRadiusInPoints
                 let distance = sqrt(Float(iDiff * iDiff + jDiff * jDiff))
@@ -110,13 +110,13 @@ class HeatMapRenderer : MKOverlayRenderer {
         return (red,green,blue,alpha)
     }
     
-    override func drawMapRect(mapRect : MKMapRect, var zoomScale: MKZoomScale, inContext: CGContextRef)
+    override func drawMapRect(mapRect : MKMapRect, zoomScale: MKZoomScale, inContext: CGContextRef)
     {
         let usRect : CGRect  = rectForMapRect(mapRect)
         //rect in user space coordinates (NOTE: not in screen points)
-        zoomScale = zoomScale / 4; // this seems to make it work better.  should make it a setting
-        let columns = ceil(CGRectGetWidth(usRect) * zoomScale)
-        let rows = ceil(CGRectGetHeight(usRect) * zoomScale)
+        let zoom = zoomScale / 4; // this seems to make it work better.  should make it a setting
+        let columns = ceil(CGRectGetWidth(usRect) * zoom)
+        let rows = ceil(CGRectGetHeight(usRect) * zoom)
         let arrayLen = columns * rows;
     
         //allocate an array matching the screen point size of the rect
@@ -127,16 +127,16 @@ class HeatMapRenderer : MKOverlayRenderer {
             //pad out the mapRect with the radius on all sides.
             // we care about points that are not in (but close to) this rect
         var paddedRect : CGRect = rectForMapRect(mapRect)
-        paddedRect.origin.x -= CGFloat(HeatMapRenderer.kSBHeatRadiusInPoints) / zoomScale
-        paddedRect.origin.y -= CGFloat(HeatMapRenderer.kSBHeatRadiusInPoints) / zoomScale;
-        paddedRect.size.width += 2 * CGFloat(HeatMapRenderer.kSBHeatRadiusInPoints) / zoomScale;
-        paddedRect.size.height += 2 * CGFloat(HeatMapRenderer.kSBHeatRadiusInPoints) / zoomScale;
+        paddedRect.origin.x -= CGFloat(HeatMapRenderer.kSBHeatRadiusInPoints) / zoom
+        paddedRect.origin.y -= CGFloat(HeatMapRenderer.kSBHeatRadiusInPoints) / zoom;
+        paddedRect.size.width += 2 * CGFloat(HeatMapRenderer.kSBHeatRadiusInPoints) / zoom;
+        paddedRect.size.height += 2 * CGFloat(HeatMapRenderer.kSBHeatRadiusInPoints) / zoom;
         let paddedMapRect : MKMapRect = mapRectForRect(paddedRect)
         
         // Get the dictionary of values out of the model for this mapRect and zoomScale.
         let hm : HeatMap = self.overlay as! HeatMap
 
-        let heat = hm.mapPointsWithHeatInMapRect(paddedMapRect, atScale: zoomScale)
+        let heat = hm.mapPointsWithHeatInMapRect(paddedMapRect, atScale: zoom)
         
         for (key, value) in heat {
             //convert key to mapPoint
@@ -147,13 +147,13 @@ class HeatMapRenderer : MKOverlayRenderer {
             //figure out the correspoinding array index
             let usPoint : CGPoint = pointForMapPoint(key)
             
-            let matrixCoord : CGPoint = CGPointMake((usPoint.x - usRect.origin.x) * zoomScale,
-                (usPoint.y - usRect.origin.y) * zoomScale)
+            let matrixCoord : CGPoint = CGPointMake((usPoint.x - usRect.origin.x) * zoom,
+                (usPoint.y - usRect.origin.y) * zoom)
             
             if (value > 0) { //don't bother with 0 or negative values
                 //iterate through surrounding pixels and increase
-                for var i = 0; i < 2 * HeatMapRenderer.kSBHeatRadiusInPoints; i++ {
-                    for var j = 0; j < 2 * HeatMapRenderer.kSBHeatRadiusInPoints; j++ {
+                for i in 0 ..< 2 * HeatMapRenderer.kSBHeatRadiusInPoints {
+                    for j in 0 ..< 2 * HeatMapRenderer.kSBHeatRadiusInPoints {
                         //find the array index
                         let column = floor(matrixCoord.x - CGFloat(HeatMapRenderer.kSBHeatRadiusInPoints) + CGFloat(i))
                         let row = floor(matrixCoord.y - CGFloat(HeatMapRenderer.kSBHeatRadiusInPoints) + CGFloat(j))
@@ -168,7 +168,7 @@ class HeatMapRenderer : MKOverlayRenderer {
             }
         }
         
-        for var i = 0; i < Int(arrayLen); i++ {
+        for i in 0 ..< Int(arrayLen) {
             if (pointValues[i] > 0) {
                 let column = i % Int(columns)
                 let row = i / Int(columns)
@@ -177,10 +177,10 @@ class HeatMapRenderer : MKOverlayRenderer {
                 CGContextSetRGBFillColor(inContext, red, green, blue, alpha);
                 
                 //scale back up to userSpace
-                let matchingUsRect = CGRectMake(usRect.origin.x + CGFloat(column) / zoomScale,
-                    usRect.origin.y + CGFloat(row) / zoomScale,
-                    1/zoomScale,
-                    1/zoomScale)
+                let matchingUsRect = CGRectMake(usRect.origin.x + CGFloat(column) / zoom,
+                    usRect.origin.y + CGFloat(row) / zoom,
+                    1/zoom,
+                    1/zoom)
                 
                 CGContextFillRect(inContext, matchingUsRect)
             }
