@@ -62,7 +62,7 @@ class SavedFieldsTableViewController: UITableViewController, UIAlertViewDelegate
 
         let field = mapViewController._fieldManager.savedFields[indexPath.item]
         // Configure the cell...
-        cell.fieldName.text = field.name
+        cell.fieldName.text = field.title
         cell.date.text = NSDateFormatter.localizedStringFromDate(field.date, dateStyle: NSDateFormatterStyle.MediumStyle, timeStyle: NSDateFormatterStyle.ShortStyle)
         return cell
     }

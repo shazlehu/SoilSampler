@@ -70,12 +70,18 @@ struct FieldConstants {
 class Field {
     
     var name: String!
+    
+    var title: String {
+        return name.componentsSeparatedByString("/").last!
+    }
+    
     var samples = [Sample]()
     var corners = [CLLocationCoordinate2D]()
     var date = NSDate()
     var isEditable : Bool = true
     
     init(named: String) {
+        NSLog(named)
         name = named
     }
     /*
@@ -219,6 +225,8 @@ class FieldManager {
     func setFieldName(name: String)
     {
         // need to check if name's already taken
+        // need to delete old file.
+        deleteFieldNamed(_currentField.title)
         _currentField.name = name
     }
 
@@ -279,13 +287,10 @@ class FieldManager {
     {
         let fileManager = NSFileManager.defaultManager()
         let dir : NSURL? = fileManager.URLsForDirectory(NSSearchPathDirectory.DocumentDirectory, inDomains: NSSearchPathDomainMask.UserDomainMask).last
-        
-        var err:NSError?
 
         do {
             
             let files = try fileManager.contentsOfDirectoryAtURL(dir!,  includingPropertiesForKeys: nil, options: NSDirectoryEnumerationOptions.SkipsHiddenFiles)
-            
             for i in 0 ..< files.count {
                 do {
                     let fileHandle = try NSFileHandle(forReadingFromURL: files[i])
@@ -329,17 +334,32 @@ class FieldManager {
                     }
                     fileHandle.closeFile()
                 } catch let error as NSError {
-                    err = error
-                    NSLog("Can't open fileHandle \(err)")
+                    NSLog("Can't open fileHandle \(error)")
                 }
             }
             // sort files by date
             self.savedFields.sortInPlace({($0 as Field).date.compare(($1 as Field).date) == NSComparisonResult.OrderedAscending })
-        } catch _ as NSError {
-        
+        } catch let error as NSError {
+            NSLog("Can't load fields: \(error)")
         }
     }
     
+    func deleteFieldNamed(name: String)
+    {
+        let fileManager = NSFileManager.defaultManager()
+        
+        let dir : NSURL = fileManager.URLsForDirectory(NSSearchPathDirectory.DocumentDirectory, inDomains: NSSearchPathDomainMask.UserDomainMask).last! as NSURL
+  
+        let fileURL =  dir.URLByAppendingPathComponent("\(name).csv")
+        
+        do {
+            try fileManager.removeItemAtURL(fileURL)
+        } catch let error as NSError {
+            NSLog("Can't delete \(fileURL) because \(error)")
+        }
+
+    }
+
     func saveAllFields() -> [NSURL]
     {
         var returnURLS = [NSURL]()
@@ -355,7 +375,7 @@ class FieldManager {
 
         let dir : NSURL = fileManager.URLsForDirectory(NSSearchPathDirectory.DocumentDirectory, inDomains: NSSearchPathDomainMask.UserDomainMask).last! as NSURL
         var err:NSError?
-        let fileURL =  dir.URLByAppendingPathComponent("\(field.name).csv")
+        let fileURL =  dir.URLByAppendingPathComponent("\(field.title).csv")
         
         // date at top of the file
         var string = dateFormatter.stringFromDate(field.date) + "\n"
@@ -468,7 +488,7 @@ class FieldManager {
     var sortedCorners: [CLLocationCoordinate2D] = [CLLocationCoordinate2D]()
     func generateTestPoints(isRandom : Bool) -> [Sample]?
     {
-        // check is we have a polygon
+        // check if we have a polygon
         
         if _currentField.corners.count < 3 { return nil }
         
@@ -477,16 +497,26 @@ class FieldManager {
         var min = CLLocationCoordinate2D(latitude: _currentField.corners[0].latitude, longitude: _currentField.corners[0].longitude)
         var max = CLLocationCoordinate2D(latitude: _currentField.corners[0].latitude, longitude: _currentField.corners[0].longitude)
         
+        var center = CLLocationCoordinate2D(latitude: 0, longitude: 0)
         for p in _currentField.corners {
+            center.latitude += p.latitude
+            center.longitude += p.longitude
             if p.latitude > max.latitude { max.latitude = p.latitude }
             if p.longitude > max.longitude { max.longitude = p.longitude }
             if p.latitude < min.latitude { min.latitude = p.latitude }
             if p.longitude < min.longitude { min.longitude = p.longitude }
         }
         
-        // sort points around center point
         
-        let center = CLLocationCoordinate2D(latitude: (max.latitude + min.latitude) / 2, longitude: (max.longitude + min.longitude) / 2)
+        center.latitude /= Double(_currentField.corners.count)
+        center.longitude /= Double(_currentField.corners.count)
+        
+        // sort corners around center point
+        
+//        let center = CLLocationCoordinate2D(
+//                        latitude: (max.latitude + min.latitude) / 2,
+//                        longitude: (max.longitude + min.longitude) / 2)
+        
         sortedCorners = _currentField.corners.sort {
             (a, b) in
             if (a.latitude - center.latitude >= 0 && b.latitude - center.latitude < 0) {

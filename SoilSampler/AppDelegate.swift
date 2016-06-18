@@ -34,7 +34,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         {
             if let vc = cvc.centerViewController as? ViewController {
                 vc._fieldManager.saveAllFields()
-                print("fields saved")
             }
         }
 
@@ -62,7 +61,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         {
             if let vc = cvc.centerViewController as? ViewController {
                 vc._fieldManager.saveAllFields()
-                print("fields saved")
             }
         }
     }

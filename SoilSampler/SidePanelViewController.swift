@@ -116,7 +116,7 @@ class SidePanelViewController: UIViewController, UITableViewDataSource, UITableV
   //  var tableWidth: CGFloat = 0.0
 
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let cell = tableView.dequeueReusableCellWithIdentifier(TableView.CellIdentifiers.MenuCell, forIndexPath: indexPath) as! MenuCell
+        _ = tableView.dequeueReusableCellWithIdentifier(TableView.CellIdentifiers.MenuCell, forIndexPath: indexPath) as! MenuCell
 //        if menuItems[indexPath.row]._toggles {
 //            cell.toggleImageView.image = UIImage(named: "draggable_icon")
 //            //            cell.accessoryView?.setNeedsDisplay()

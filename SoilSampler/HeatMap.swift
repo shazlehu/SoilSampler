@@ -13,16 +13,15 @@ extension MKMapPoint : Hashable {
     
     public var hashValue: Int {
         get {
-            // One simple implementation of that idea is simply to
-            // discard the high 32-bits of each coordinate,
-            // and then combine their low bits into one hash:
             
-            // need to deal with 64 bit and 32 bit cases :(
+            // take the x and y coordinate hash values, discard the significant
+            // half of the bits, shift the x the the significant size, and
+            // combine them with a bitwise or
             
-            let lowX = Int(x) & 0xFFFFFFFF
-            let lowY = Int(y) & 0xFFFFFFFF
-            let hash = (lowX << 32) | lowY
-                
+            let lowX = x.hashValue & (Int.max >> (sizeof(Int) * 4))
+            let lowY = y.hashValue & (Int.max >> (sizeof(Int) * 4))
+            let hash = (lowX << (sizeof(Int) * 4) ) | lowY
+            
             return hash
         }
     }

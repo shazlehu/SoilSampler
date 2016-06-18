@@ -35,7 +35,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         didSet {
 
             if _fieldManager._currentField.name != FieldConstants.DefaultName {
-                _textField.text = _fieldManager._currentField.name
+                _textField.text = _fieldManager._currentField.title
                 _textField.textColor = UIColor.blackColor()
             } else {
                 _textField.text = Constants.DefaultFieldTitle
@@ -196,7 +196,7 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
         
         addAnnotationsForCurrentField()
         
-        _textField.text = _fieldManager._currentField.name
+        _textField.text = _fieldManager._currentField.title
         _textField.textColor = UIColor.blackColor()
     }
     
