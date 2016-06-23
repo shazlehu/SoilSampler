@@ -619,6 +619,8 @@ class ViewController: CenterViewController, UITableViewDataSource, UITableViewDe
     {
         if !isEditable { return }
         
+//        let region = _map.region
+        
         let coord : CLLocationCoordinate2D = _map.centerCoordinate
         let index = _fieldManager.addFieldPoint(coord)
         addFieldCorner(coord, fieldIndex: index)

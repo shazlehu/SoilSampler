@@ -485,7 +485,7 @@ class FieldManager {
     }
 
 
-    var sortedCorners: [CLLocationCoordinate2D] = [CLLocationCoordinate2D]()
+    //var sortedCorners: [CLLocationCoordinate2D] = [CLLocationCoordinate2D]()
     func generateTestPoints(isRandom : Bool) -> [Sample]?
     {
         // check if we have a polygon
@@ -514,11 +514,19 @@ class FieldManager {
         // sort corners around center point
         
 //        let center = CLLocationCoordinate2D(
-//                        latitude: (max.latitude + min.latitude) / 2,
+//                       latitude: (max.latitude + min.latitude) / 2,
 //                        longitude: (max.longitude + min.longitude) / 2)
-        
-        sortedCorners = _currentField.corners.sort {
+    
+        _currentField.corners.sortInPlace {
             (a, b) in
+            /*(x, y) in
+            var a = x
+            var b = y
+            a.latitude += 1000
+            a.longitude += 1000
+            b.latitude += 1000
+            b.longitude += 1000
+*/
             if (a.latitude - center.latitude >= 0 && b.latitude - center.latitude < 0) {
                 return true
             }
@@ -547,7 +555,9 @@ class FieldManager {
             let d2 = (b.latitude - center.latitude) * (b.latitude - center.latitude) + (b.longitude - center.longitude) * (b.longitude - center.longitude)
             return d1 > d2
         }
-        
+        var first = _currentField.corners.removeAtIndex(0)
+        _currentField.corners = _currentField.corners.reverse()
+        _currentField.corners.insert(first, atIndex: 0)
         
         // algorithm from http://www.codeproject.com/Tips/84226/Is-a-Point-inside-a-Polygon
         
@@ -618,7 +628,7 @@ class FieldManager {
                 p.longitude += longFunc(p.latitude)
                 p.latitude += latFunc(p.longitude)
                 
-                if pointInPolygon(p, polygon: sortedCorners) {
+                if pointInPolygon(p, polygon: _currentField.corners) {
                     _currentField.samples.append(Sample(point: p, depth: 0))
                     rowLength += 1
                }
