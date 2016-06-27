@@ -30,6 +30,9 @@ public extension Double {
         let r = Double(arc4random(UInt64)) / Double(UInt64.max)
         return (r * (upper - lower)) + lower
     }
+    func format(f: String) -> String {
+        return String(format: "%\(f)f", self)
+    }
 }
 
 public extension CLLocationCoordinate2D {
@@ -428,24 +431,24 @@ class FieldManager {
         return (end.latitude - start.latitude)/(end.longitude - start.longitude)
     }
     
-    func findLongestSide(isVertical: Bool) -> (start: CLLocationCoordinate2D, end: CLLocationCoordinate2D)
+    func findLongestSide(corners: [CLLocationCoordinate2D], isVertical: Bool) -> (start: CLLocationCoordinate2D, end: CLLocationCoordinate2D)
     {
         var candidateSides = [(CLLocationCoordinate2D,CLLocationCoordinate2D)]()
-        for i in 0 ..< _currentField.corners.count - 1 {
-            let slope = abs(getSlope(_currentField.corners[i], end: _currentField.corners[i+1]))
+        for i in 0 ..< corners.count - 1 {
+            let slope = abs(getSlope(corners[i], end: corners[i+1]))
             if (slope > 1) && isVertical {
-                candidateSides.append((_currentField.corners[i], _currentField.corners[i+1]))
+                candidateSides.append((corners[i], corners[i+1]))
             }
             else if (slope < 1) && !isVertical {
-                candidateSides.append((_currentField.corners[i], _currentField.corners[i+1]))
+                candidateSides.append((corners[i], corners[i+1]))
             }
         }
         
-        if abs(getSlope(_currentField.corners.last!, end: _currentField.corners.first!)) > 1 {
-            candidateSides.append((_currentField.corners.last!, _currentField.corners.first!))
+        if abs(getSlope(corners.last!, end: corners.first!)) > 1 {
+            candidateSides.append((corners.last!, corners.first!))
         }
         
-        if (candidateSides.isEmpty == true) { return (_currentField.corners[0],_currentField.corners[1]) }
+        if (candidateSides.isEmpty == true) { return (corners[0],corners[1]) }
         var longestSide = candidateSides[0]
         for side in candidateSides {
             if (distance(side.0, b: side.1) > distance(longestSide.0, b: longestSide.1)) {
@@ -456,13 +459,13 @@ class FieldManager {
         
     }
     
-    func findLongestLongitudeSide() -> (start: CLLocationCoordinate2D, end: CLLocationCoordinate2D)?
+    func findLongestLongitudeSide(corners: [CLLocationCoordinate2D]) -> (start: CLLocationCoordinate2D, end: CLLocationCoordinate2D)?
     {
-        return findLongestSide(false)
+        return findLongestSide(corners, isVertical: false)
     }
     
-    func findLongestLatitudeSide() -> (start: CLLocationCoordinate2D, end: CLLocationCoordinate2D)? {
-        return findLongestSide(true)
+    func findLongestLatitudeSide(corners: [CLLocationCoordinate2D]) -> (start: CLLocationCoordinate2D, end: CLLocationCoordinate2D)? {
+        return findLongestSide(corners, isVertical: true)
     }
     
     // y = mx + b
@@ -517,7 +520,7 @@ class FieldManager {
 //                       latitude: (max.latitude + min.latitude) / 2,
 //                        longitude: (max.longitude + min.longitude) / 2)
     
-        _currentField.corners.sortInPlace {
+        var sortedCorners = _currentField.corners.sort {
             (a, b) in
             /*(x, y) in
             var a = x
@@ -555,9 +558,13 @@ class FieldManager {
             let d2 = (b.latitude - center.latitude) * (b.latitude - center.latitude) + (b.longitude - center.longitude) * (b.longitude - center.longitude)
             return d1 > d2
         }
-        var first = _currentField.corners.removeAtIndex(0)
-        _currentField.corners = _currentField.corners.reverse()
-        _currentField.corners.insert(first, atIndex: 0)
+        
+        // I'm relying on the corners starting in upper right, going clockwise.
+        // Rearranges them into this order.
+        
+        var first = sortedCorners.removeAtIndex(0)
+        sortedCorners = sortedCorners.reverse()
+        sortedCorners.insert(first, atIndex: 0)
         
         // algorithm from http://www.codeproject.com/Tips/84226/Is-a-Point-inside-a-Polygon
         
@@ -605,11 +612,11 @@ class FieldManager {
         
         // get functions to make points parallel to the longest vertical and horizontal sides
         
-        var (start,end) = findLongestLatitudeSide()!
+        var (start,end) = findLongestLatitudeSide(sortedCorners)!
         
         let longFunc = getYaxisFunc(start, end: end)
         
-        (start,end) = findLongestLongitudeSide()!
+        (start,end) = findLongestLongitudeSide(sortedCorners)!
         let latFunc = getXaxisFunc(start, end: end)
         
         for i in 0 ..< Int(side) + 1 {
@@ -628,7 +635,7 @@ class FieldManager {
                 p.longitude += longFunc(p.latitude)
                 p.latitude += latFunc(p.longitude)
                 
-                if pointInPolygon(p, polygon: _currentField.corners) {
+                if pointInPolygon(p, polygon: sortedCorners) {
                     _currentField.samples.append(Sample(point: p, depth: 0))
                     rowLength += 1
                }
