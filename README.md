@@ -1,2 +1,2 @@
 # SoilSampler
-This app aids in collecting soil samplers for agricultural purposes
+This app aids in collecting soil samples for agricultural purposes
